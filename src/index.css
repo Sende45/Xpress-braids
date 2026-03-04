@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-gold: #D4AF37;
+  --color-brand-black: #050505;
+  --color-brand-gray: #121212;
+  --color-brand-cream: #F9F7F2;
+  
+  --font-display: "Clash Display", sans-serif;
+  
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+}
+
+@layer base {
+  body {
+    @apply bg-brand-cream text-brand-black selection:bg-brand-gold/30 antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
+
+  /* Scrollbar élégante (NYC Style) */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-brand-cream;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-brand-black/10 rounded-full hover:bg-brand-gold/50 transition-colors;
+  }
+}
+
+@layer components {
+  /* Effet de texte contour (Outline) */
+  .stroke-text {
+    -webkit-text-stroke: 1.5px var(--color-brand-black);
+    color: transparent;
+    transition: all 0.5s var(--ease-fluid);
+  }
+
+  .group:hover .stroke-text {
+    -webkit-text-stroke: 1.5px var(--color-brand-gold);
+  }
+
+  /* Système de révélation au scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: reveal-in 0.8s var(--ease-fluid) forwards;
+  }
+
+  @keyframes reveal-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Effet de grain de papier */
+  .bg-grain {
+    position: relative;
+  }
+  .bg-grain::before {
+    content: "";
+    position: fixed; /* Fixé pour couvrir tout l'écran au scroll */
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 50;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    filter: contrast(150%) brightness(100%);
+  }
+}
+
+/* Animations Utilitaires */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* Effet de flottement pour les éléments décoratifs */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+/* Correction pour les inputs de date sur mobile */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0);
+  cursor: pointer;
+}
