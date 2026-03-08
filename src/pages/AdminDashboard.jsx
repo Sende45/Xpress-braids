@@ -10,10 +10,11 @@ import {
 const AdminDashboard = () => {
   const { token } = useAuth();
   
-  // --- CONFIGURATION DYNAMIQUE ---
-  // Utilise l'URL Vercel en prod ou localhost en dev
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  const CLEAN_URL = API_BASE_URL.replace(/\/$/, "");
+  // --- CONFIGURATION DYNAMIQUE CORRIGÉE ---
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  
+  // Cette ligne retire proprement "/api/auth" de l'URL pour éviter les doublons 404
+  const CLEAN_BASE = API_URL.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
 
   // États pour les données
   const [bookings, setBookings] = useState([]);
@@ -43,7 +44,7 @@ const AdminDashboard = () => {
 
   const fetchAllData = async () => {
     try {
-      const response = await fetch(`${CLEAN_URL}/api/bookings/all`, {
+      const response = await fetch(`${CLEAN_BASE}/api/bookings/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) setBookings(await response.json());
@@ -53,14 +54,14 @@ const AdminDashboard = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch(`${CLEAN_URL}/api/services`);
+      const response = await fetch(`${CLEAN_BASE}/api/services`);
       if (response.ok) setServices(await response.json());
     } catch (err) { console.error("Erreur services", err); }
   };
 
   const updateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`${CLEAN_URL}/api/bookings/${id}/status`, {
+      const response = await fetch(`${CLEAN_BASE}/api/bookings/${id}/status`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -74,7 +75,6 @@ const AdminDashboard = () => {
     } catch (err) { alert("Erreur lors de la mise à jour"); }
   };
 
-  // Upload vers ImgBB
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -104,7 +104,7 @@ const AdminDashboard = () => {
     if (!newService.image) return alert("Veuillez uploader une image d'abord.");
 
     try {
-      const response = await fetch(`${CLEAN_URL}/api/services`, {
+      const response = await fetch(`${CLEAN_BASE}/api/services`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ const AdminDashboard = () => {
   const deleteService = async (id) => {
     if(!window.confirm("Supprimer ce service de la galerie ?")) return;
     try {
-      const response = await fetch(`${CLEAN_URL}/api/services/${id}`, {
+      const response = await fetch(`${CLEAN_BASE}/api/services/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -131,7 +131,7 @@ const AdminDashboard = () => {
     } catch (err) { alert("Erreur suppression"); }
   };
 
-  // --- CALCULS STATS (MODIFIÉ POUR 30$ FIXE) ---
+  // --- CALCULS STATS ---
   const revenue = bookings.filter(b => b.depositPaid).reduce((acc, curr) => acc + 30, 0);
   const pending = bookings.filter(b => b.status === 'Pending').length;
   const confirmed = bookings.filter(b => b.status === 'Confirmed').length;
@@ -271,8 +271,6 @@ const AdminDashboard = () => {
               <div className="bg-white/[0.03] border border-white/10 p-8 rounded-[2.5rem] sticky top-32">
                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold mb-8">Add Portfolio Asset</h3>
                 <form onSubmit={handleAddService} className="space-y-4">
-                  
-                  {/* Image Upload Area */}
                   <div className="relative group mb-6">
                     <input 
                       type="file" id="img-upload" className="hidden" 
@@ -363,7 +361,6 @@ const AdminDashboard = () => {
 };
 
 // --- SUB-COMPONENTS ---
-
 const StatBox = ({ label, value, icon, sub }) => (
   <div className="bg-white/[0.03] border border-white/10 p-8 rounded-[3rem] hover:border-brand-gold/40 transition-all group">
     <div className="flex justify-between items-start mb-6">

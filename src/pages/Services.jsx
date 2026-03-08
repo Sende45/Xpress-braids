@@ -10,8 +10,14 @@ const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        // --- CONFIGURATION DYNAMIQUE CORRIGÉE ---
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-        const response = await axios.get(`${apiUrl}/api/services`);
+        
+        // Nettoyage de l'URL pour s'assurer que l'appel tape sur /api/services 
+        // et non sur /api/auth/api/services
+        const cleanBase = apiUrl.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
+        
+        const response = await axios.get(`${cleanBase}/api/services`);
         setServices(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des services:", error);
@@ -59,7 +65,7 @@ const Services = () => {
                 alt={service.name}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
-              {/* Price Tag Overlay - Dollars Corrected */}
+              {/* Price Tag Overlay */}
               <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-md px-5 py-2 rounded-full shadow-xl border border-white/20">
                 <span className="text-2xl font-black text-black">${service.price}</span>
               </div>
