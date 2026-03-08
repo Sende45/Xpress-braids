@@ -26,6 +26,11 @@ const Booking = () => {
     phone: ''
   });
 
+  // --- CONFIGURATION DYNAMIQUE CORRIGÉE ---
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // Nettoyage de l'URL pour éviter les doublons /api/auth/api/bookings
+  const CLEAN_BASE = API_URL.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
+
   const DEPOSIT_AMOUNT = 30; // Prix unique pour tous les RDV
   const availableSlots = ["09:00 AM", "11:00 AM", "02:00 PM", "04:30 PM"];
   
@@ -36,14 +41,14 @@ const Booking = () => {
   const isFormComplete = bookingData.firstName && bookingData.lastName && bookingData.email && bookingData.phone;
 
   const handlePayment = async () => {
+    if (!selectedService) return alert("Please select a service first.");
+    
     setLoading(true);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
-      const response = await axios.post(`${apiUrl}/api/bookings/create-hybride`, {
+      const response = await axios.post(`${CLEAN_BASE}/api/bookings/create-hybride`, {
         ...bookingData,
         service: selectedService.name,
-        amount: DEPOSIT_AMOUNT // On envoie le montant fixe au backend
+        amount: DEPOSIT_AMOUNT 
       });
 
       if (response.data.url) {
@@ -51,7 +56,7 @@ const Booking = () => {
       }
     } catch (err) {
       console.error("Erreur paiement:", err);
-      alert(err.response?.data?.details || "Erreur de connexion.");
+      alert(err.response?.data?.error || "Erreur de connexion au service de paiement.");
       setLoading(false);
     }
   };
@@ -82,7 +87,7 @@ const Booking = () => {
                 {services.map((s) => (
                   <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s.id}); nextStep(); }}
                     className={`group flex justify-between items-center p-8 rounded-[2rem] border transition-all ${bookingData.service === s.id ? 'bg-brand-black text-white border-brand-black scale-[1.02]' : 'bg-white/40 border-white/20 hover:border-brand-gold/50'}`}>
-                    <div className="space-y-1">
+                    <div className="space-y-1 text-left">
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">{s.tag}</span>
                       <h3 className="text-2xl font-black uppercase italic tracking-tight">{s.name}</h3>
                       <p className="text-xs font-medium opacity-60">Deposit: ${DEPOSIT_AMOUNT} • {s.duration / 60}h Session</p>
@@ -124,16 +129,16 @@ const Booking = () => {
             {step === 3 && (
               <div className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <input type="text" placeholder="First Name" className="w-full bg-white/40 border border-white/20 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
-                  <input type="text" placeholder="Last Name" className="w-full bg-white/40 border border-white/20 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
-                  <input type="email" placeholder="Email" className="w-full bg-white/40 border border-white/20 md:col-span-2 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
-                  <input type="tel" placeholder="Phone" className="w-full bg-white/40 border border-white/20 md:col-span-2 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
+                  <input type="text" placeholder="First Name" className="w-full bg-white/40 border border-white/20 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
+                  <input type="text" placeholder="Last Name" className="w-full bg-white/40 border border-white/20 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
+                  <input type="email" placeholder="Email" className="w-full bg-white/40 border border-white/20 md:col-span-2 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
+                  <input type="tel" placeholder="Phone" className="w-full bg-white/40 border border-white/20 md:col-span-2 p-6 rounded-2xl font-bold outline-none focus:border-brand-gold" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
                 </div>
                 <div className="bg-brand-black text-white p-10 rounded-[3rem] shadow-2xl">
                     <p className="text-xl font-medium leading-tight">Secure your slot with a <span className="text-brand-gold font-black italic">${DEPOSIT_AMOUNT}.00</span> deposit.</p>
                 </div>
-                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-brand-gold text-brand-black py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.05] transition-all">
-                  {loading ? "Redirecting..." : "Confirm & Pay Deposit"}
+                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-brand-gold text-brand-black py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:scale-[1.05] transition-all disabled:opacity-50">
+                  {loading ? "Redirecting to Stripe..." : "Confirm & Pay Deposit"}
                 </button>
               </div>
             )}
@@ -157,7 +162,7 @@ const Booking = () => {
                     <p className="text-4xl font-black italic tracking-tighter">${DEPOSIT_AMOUNT}</p>
                   </div>
                 </div>
-              ) : <p className="text-xs italic text-gray-400">Select a style above.</p>}
+              ) : <p className="text-xs italic text-gray-400 text-center py-4">Select a style to see the summary.</p>}
             </div>
           </div>
         </div>
