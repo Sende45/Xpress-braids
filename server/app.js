@@ -10,12 +10,11 @@ const app = express();
 
 // --- 1. SÉCURITÉ & PERFORMANCE ---
 app.use(helmet({
-    crossOriginResourcePolicy: false, 
+    crossOriginResourcePolicy: false, // Utile pour tes projets comme Xpress-braids ou GOAT STORE
 })); 
 app.use(morgan('dev')); 
 app.use(express.json({ limit: '10kb' })); 
 
-// Limiteur de requêtes pour protéger l'API
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
@@ -23,7 +22,6 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Configuration CORS mise à jour pour inclure les domaines de dev et de prod
 app.use(cors({
     origin: [
       'https://xpress-braids.vercel.app', 
@@ -50,11 +48,12 @@ mongoose.connect(mongoURI)
 
 // --- 3. ROUTES ---
 
-// ✅ AJOUT : Route de base pour corriger le "HEAD / 404" sur Render
+// ⭐ INDISPENSABLE POUR RENDER : Route de santé (Health Check)
+// Cette route répondra à la requête "HEAD /" ou "GET /" et stoppera la 404
 app.get('/', (req, res) => {
     res.status(200).json({ 
         status: "success", 
-        message: "API Xpress-braids (NYC Studio) est en ligne" 
+        message: "Serveur Xpress-braids est opérationnel" 
     });
 });
 
