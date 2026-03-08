@@ -10,6 +10,11 @@ import {
 const AdminDashboard = () => {
   const { token } = useAuth();
   
+  // --- CONFIGURATION DYNAMIQUE ---
+  // Utilise l'URL Vercel en prod ou localhost en dev
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const CLEAN_URL = API_BASE_URL.replace(/\/$/, "");
+
   // États pour les données
   const [bookings, setBookings] = useState([]);
   const [services, setServices] = useState([]); 
@@ -38,7 +43,7 @@ const AdminDashboard = () => {
 
   const fetchAllData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/bookings/all', {
+      const response = await fetch(`${CLEAN_URL}/api/bookings/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) setBookings(await response.json());
@@ -48,14 +53,14 @@ const AdminDashboard = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/services');
+      const response = await fetch(`${CLEAN_URL}/api/services`);
       if (response.ok) setServices(await response.json());
     } catch (err) { console.error("Erreur services", err); }
   };
 
   const updateStatus = async (id, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${id}/status`, {
+      const response = await fetch(`${CLEAN_URL}/api/bookings/${id}/status`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -99,7 +104,7 @@ const AdminDashboard = () => {
     if (!newService.image) return alert("Veuillez uploader une image d'abord.");
 
     try {
-      const response = await fetch('http://localhost:5000/api/services', {
+      const response = await fetch(`${CLEAN_URL}/api/services`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -118,7 +123,7 @@ const AdminDashboard = () => {
   const deleteService = async (id) => {
     if(!window.confirm("Supprimer ce service de la galerie ?")) return;
     try {
-      const response = await fetch(`http://localhost:5000/api/services/${id}`, {
+      const response = await fetch(`${CLEAN_URL}/api/services/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
