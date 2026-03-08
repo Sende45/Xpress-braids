@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, LayoutDashboard } from 'lucide-react';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -20,17 +20,21 @@ const Header = () => {
         <nav className="hidden md:flex items-center gap-10">
           <Link to="/services" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">Gallery</Link>
           <Link to="/booking" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">Booking</Link>
-          <Link to="/studio" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">Studio</Link>
+          {/* Si l'utilisateur est admin, on montre le lien Dashboard à la place de Studio */}
+          {user?.role === 'admin' ? (
+            <Link to="/admin-control-center" className="text-[10px] font-black uppercase tracking-widest text-brand-gold flex items-center gap-2">
+              <LayoutDashboard size={14} /> Admin
+            </Link>
+          ) : (
+             <Link to="/services" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">Styles</Link>
+          )}
         </nav>
 
-        {/* Actions : Login / Profile */}
+        {/* Actions */}
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-4">
-              <Link 
-                to="/profile" 
-                className="w-10 h-10 rounded-full bg-brand-cream border border-black/5 flex items-center justify-center hover:border-brand-gold transition-all"
-              >
+              <Link to="/profile" className="w-10 h-10 rounded-full bg-brand-cream border border-black/5 flex items-center justify-center hover:border-brand-gold transition-all">
                 <User size={18} className="text-brand-black" />
               </Link>
               <button onClick={logout} className="text-[10px] font-black uppercase tracking-widest text-red-500 opacity-60 hover:opacity-100">
@@ -39,13 +43,8 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <Link to="/login" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">
-                Sign In
-              </Link>
-              <Link 
-                to="/booking" 
-                className="bg-brand-black text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-gold hover:text-brand-black transition-all"
-              >
+              <Link to="/login" className="text-[10px] font-black uppercase tracking-widest hover:text-brand-gold transition-colors">Sign In</Link>
+              <Link to="/booking" className="bg-brand-black text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-gold transition-all">
                 Book Now ↗
               </Link>
             </div>

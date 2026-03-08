@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'; 
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false); // État de chargement
+  
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleSubmit = (e) => {
+  // On récupère la page d'où vient l'utilisateur (ou on va sur le profile par défaut)
+  const from = location.state?.from?.pathname || "/profile";
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(email, password);
+    setError('');
+    setIsLoggingIn(true);
+
+    const result = await login(email, password);
+
+    if (result.success) {
+      // Redirection vers la page demandée initialement
+      navigate(from, { replace: true });
+    } else {
+      setError(result.message);
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -26,6 +46,14 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Message d'erreur élégant */}
+          {error && (
+            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 animate-shake">
+              <AlertCircle size={16} />
+              <p className="text-[10px] font-black uppercase tracking-widest">{error}</p>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-brand-gold px-2">Email Address</label>
             <div className="relative">
@@ -33,6 +61,7 @@ const Login = () => {
               <input 
                 type="email" 
                 required
+                placeholder="studio@phi.com"
                 className="w-full bg-white/40 backdrop-blur-md border border-white/20 p-6 pl-14 rounded-2xl font-bold outline-none focus:border-brand-gold transition-all"
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -44,16 +73,27 @@ const Login = () => {
             <div className="relative">
               <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 required
-                className="w-full bg-white/40 backdrop-blur-md border border-white/20 p-6 pl-14 rounded-2xl font-bold outline-none focus:border-brand-gold transition-all"
+                placeholder="••••••••"
+                className="w-full bg-white/40 backdrop-blur-md border border-white/20 p-6 pl-14 pr-14 rounded-2xl font-bold outline-none focus:border-brand-gold transition-all"
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20 hover:text-brand-gold transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
-          <button className="w-full bg-brand-black text-white py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-gold hover:text-brand-black transition-all duration-500 shadow-2xl">
-            Sign In to Experience
+          <button 
+            disabled={isLoggingIn}
+            className="w-full bg-brand-black text-white py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-gold hover:text-brand-black transition-all duration-500 shadow-2xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoggingIn ? "Entering Studio..." : "Sign In to Experience"}
           </button>
         </form>
 

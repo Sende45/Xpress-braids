@@ -1,10 +1,10 @@
 const Booking = require('../models/Booking');
-const User = require('../models/User'); // Vérifie bien le chemin (../ ou ./)
+const User = require('../models/User'); 
 const bcrypt = require('bcryptjs');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const nodemailer = require('nodemailer');
 
-// Configuration du transporteur Nodemailer
+// --- CONFIGURATION NODEMAILER ---
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -18,13 +18,18 @@ exports.createHybridBooking = async (req, res) => {
   try {
     const { firstName, lastName, email, service, variant, date, time } = req.body;
 
-    // A. Gestion de l'utilisateur (on le cherche ou on le crée)
+    if (!email || !firstName) {
+      return res.status(400).json({ error: "Données manquantes." });
+    }
+
+    // A. Gestion de l'utilisateur
     let user = await User.findOne({ email });
     let isNewUser = false;
 
     if (!user) {
       const salt = await bcrypt.genSalt(10);
       const temporaryPassword = await bcrypt.hash("Welcome123!", salt); 
+      
       user = new User({
         firstName,
         lastName,
@@ -36,7 +41,7 @@ exports.createHybridBooking = async (req, res) => {
       isNewUser = true;
     }
 
-    // B. Création de la session de paiement Stripe (30$)
+    // B. Création session Stripe
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       customer_email: email,
@@ -47,37 +52,61 @@ exports.createHybridBooking = async (req, res) => {
             name: `Acompte Réservation - ${service}`,
             description: `Rendez-vous le ${date} à ${time}` 
           },
-          unit_amount: 3000, // 30.00$
+          unit_amount: 3000, 
         },
         quantity: 1,
       }],
       mode: 'payment',
-      metadata: {
-        userId: user._id.toString(),
-        service,
-        variant: variant || "N/A",
-        date,
-        time,
-        amount: 30
-      },
+      metadata: { userId: user._id.toString(), service, date, time },
       success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.FRONTEND_URL}/cancel`,
     });
 
-    // On renvoie l'URL Stripe au front pour redirection
-    res.json({ 
-      id: session.id, 
-      url: session.url, 
-      userCreated: isNewUser 
+    // C. Enregistrement (Statuts en Anglais pour matcher le Dashboard)
+    const newBooking = new Booking({
+      user: user._id,
+      service,
+      variant: variant || "N/A",
+      date,
+      time,
+      status: 'Pending', // Harmonisé
+      paymentStatus: 'Unpaid', // Harmonisé
+      sessionId: session.id 
     });
+    await newBooking.save();
+
+    res.json({ id: session.id, url: session.url, userCreated: isNewUser });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erreur lors de l'initialisation du paiement" });
+    console.error("❌ Error Booking:", err.message);
+    res.status(500).json({ error: err.message });
   }
 };
 
-// --- 2. RÉCUPÉRER TOUTES LES RÉSERVATIONS (ADMIN) ---
+// --- 2. CONFIRMATION DU PAIEMENT ---
+exports.confirmPayment = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    if (session.payment_status === 'paid') {
+      const updatedBooking = await Booking.findOneAndUpdate(
+        { sessionId: sessionId },
+        { status: 'Confirmed', paymentStatus: 'Paid', depositPaid: true },
+        { new: true }
+      ).populate('user');
+
+      if (!updatedBooking) return res.status(404).json({ error: "Booking not found." });
+
+      return res.status(200).json({ success: true, booking: updatedBooking });
+    }
+    res.status(400).json({ error: "Payment not completed." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// --- 3. TOUTES LES RÉSERVATIONS (ADMIN) ---
 exports.getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.find()
@@ -85,54 +114,56 @@ exports.getAllBookings = async (req, res) => {
       .sort({ createdAt: -1 });
     res.json(bookings);
   } catch (err) {
-    res.status(500).json({ error: "Erreur lors de la récupération des données" });
+    res.status(500).json({ error: "Database error." });
   }
 };
 
-// --- 3. METTRE À JOUR LE STATUT + ENVOI MAIL NOTIFICATION ---
+// --- 4. UPDATE STATUS + EMAIL ---
 exports.updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
     const booking = await Booking.findById(id).populate('user');
-    if (!booking) return res.status(404).json({ message: "Réservation introuvable" });
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
 
     booking.status = status;
     await booking.save();
 
-    // Envoi de mail automatique si le statut est "Confirmed"
-    if (status === 'Confirmed' && booking.user) {
-      const mailOptions = {
-        from: `"NYC Studio" <${process.env.EMAIL_USER}>`,
-        to: booking.user.email,
-        subject: '✨ Booking Confirmed - NYC Studio',
-        html: `
-          <div style="font-family: sans-serif; padding: 20px; border: 1px solid #D4AF37;">
-            <h2 style="color: #000;">NYC <span style="color: #D4AF37;">STUDIO.</span></h2>
-            <p>Hello <strong>${booking.user.firstName}</strong>,</p>
-            <p>Your appointment for <strong>${booking.service}</strong> is now <strong>CONFIRMED</strong>.</p>
-            <p>📅 Date: ${booking.date} at ${booking.time}</p>
-            <p>The $30 deposit has been successfully processed. See you soon!</p>
-          </div>
-        `
-      };
-      await transporter.sendMail(mailOptions);
+    // Envoi Mail si Confirmé
+    if (status === 'Confirmed' && booking.user?.email) {
+      try {
+        await transporter.sendMail({
+          from: `"NYC Studio" <${process.env.EMAIL_USER}>`,
+          to: booking.user.email,
+          subject: '✨ Appointment Confirmed - NYC Studio',
+          html: `
+            <div style="font-family: sans-serif; padding: 20px; border: 2px solid #D4AF37; max-width: 500px;">
+              <h2 style="color: #000;">NYC <span style="color: #D4AF37;">STUDIO.</span></h2>
+              <p>Hello <strong>${booking.user.firstName}</strong>,</p>
+              <p>Your appointment for <strong>${booking.service}</strong> is <strong>CONFIRMED</strong>.</p>
+              <p>📅 ${booking.date} at ${booking.time}</p>
+              <p style="color: #666; font-size: 12px;">The $30 deposit has been secured. See you soon!</p>
+            </div>
+          `
+        });
+      } catch (mailErr) {
+        console.error("📧 Mail Error:", mailErr.message);
+      }
     }
 
-    res.json({ message: `Status updated to ${status} and email sent.` });
+    res.json({ success: true, message: `Status: ${status}` });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Erreur lors de la mise à jour" });
+    res.status(500).json({ error: "Update failed." });
   }
 };
 
-// --- 4. SUPPRIMER UNE RÉSERVATION (ADMIN) ---
+// --- 5. DELETE ---
 exports.deleteBooking = async (req, res) => {
   try {
     await Booking.findByIdAndDelete(req.params.id);
-    res.json({ message: "Booking deleted successfully" });
+    res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: "Erreur lors de la suppression" });
+    res.status(500).json({ error: "Delete failed." });
   }
 };

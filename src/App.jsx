@@ -8,26 +8,28 @@ import Booking from './pages/Booking';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AdminDashboard from './pages/AdminDashboard'; // Import de la page Admin
-import ProtectedRoute from './components/ProtectedRoute'; // Import du garde-barrière
+import Success from './pages/Success';
+import AdminDashboard from './pages/AdminDashboard'; 
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 export default function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-[#FDFCF8]">
         
         <Header />
 
         <main className="flex-grow">
           <Routes>
-            {/* --- Routes Publiques --- */}
+            {/* Routes Publiques */}
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/booking" element={<Booking />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
-            {/* --- Routes Protégées (Utilisateurs connectés) --- */}
+            <Route path="/success" element={<Success />} />
+
+            {/* Profil Client */}
             <Route 
               path="/profile" 
               element={
@@ -37,7 +39,7 @@ export default function App() {
               } 
             />
 
-            {/* --- Route Admin (Admin uniquement) --- */}
+            {/* Dashboard Admin */}
             <Route 
               path="/admin-control-center" 
               element={
@@ -46,6 +48,9 @@ export default function App() {
                 </ProtectedRoute>
               } 
             />
+            
+            {/* Redirection automatique pour éviter les erreurs 404 sur /studio */}
+            <Route path="/studio" element={<Services />} />
           </Routes>
         </main>
 

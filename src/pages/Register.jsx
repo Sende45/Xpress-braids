@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, User, ArrowRight, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Sparkles, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -13,10 +14,23 @@ const Register = () => {
     password: ''
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await register(formData);
-    navigate('/'); // Redirect to home after signup
+    setError('');
+    setIsSubmitting(true);
+
+    const result = await register(formData);
+
+    if (result.success) {
+      navigate('/dashboard'); // Ou la page de ton choix après inscription
+    } else {
+      setError(result.message);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -37,6 +51,14 @@ const Register = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Message d'erreur */}
+          {error && (
+            <div className="flex items-center gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 animate-shake">
+              <AlertCircle size={16} />
+              <p className="text-[10px] font-black uppercase tracking-widest">{error}</p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-brand-gold px-2">First Name</label>
@@ -82,19 +104,29 @@ const Register = () => {
             <div className="relative">
               <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 required
                 placeholder="••••••••"
-                className="w-full bg-white/40 backdrop-blur-md border border-white/20 p-6 pl-14 rounded-2xl font-bold outline-none focus:border-brand-gold transition-all"
+                className="w-full bg-white/40 backdrop-blur-md border border-white/20 p-6 pl-14 pr-14 rounded-2xl font-bold outline-none focus:border-brand-gold transition-all"
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20 hover:text-brand-gold transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
           </div>
 
-          <button className="w-full bg-brand-black text-white py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-gold hover:text-brand-black transition-all duration-500 shadow-2xl group">
+          <button 
+            disabled={isSubmitting}
+            className="w-full bg-brand-black text-white py-8 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs hover:bg-brand-gold hover:text-brand-black transition-all duration-500 shadow-2xl group disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <div className="flex items-center justify-center gap-3">
-              Create Account
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              {isSubmitting ? "Processing..." : "Create Account"}
+              {!isSubmitting && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             </div>
           </button>
         </form>
