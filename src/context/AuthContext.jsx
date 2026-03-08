@@ -2,14 +2,15 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 
 const AuthContext = createContext();
 
-// Remplace par l'URL de ton backend une fois déployé
-const API_URL = "http://localhost:5000/api/auth"; 
+// Utilisation dynamique de l'URL :
+// 1. Cherche la variable VITE_API_URL définie sur Vercel
+// 2. Si absente (en local), utilise localhost:5000
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api/auth";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Utilisation de useCallback pour éviter des boucles infinies si utilisé dans useEffect
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('phi_user');
@@ -17,23 +18,29 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('phi_user');
-    const token = localStorage.getItem('phi_token');
+    const initAuth = () => {
+      const savedUser = localStorage.getItem('phi_user');
+      const token = localStorage.getItem('phi_token');
 
-    if (savedUser && token) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error("Erreur de lecture du localStorage", error);
-        logout();
+      if (savedUser && token) {
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (error) {
+          console.error("Erreur de lecture du localStorage", error);
+          logout();
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+    initAuth();
   }, [logout]);
 
   const register = async (userData) => {
     try {
-      const response = await fetch(`${API_URL}/register`, {
+      // Nettoyage de l'URL pour éviter les doubles slashs //
+      const url = `${API_BASE_URL.replace(/\/$/, "")}/register`;
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
@@ -51,13 +58,15 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Erreur Register:", error);
-      return { success: false, message: "Impossible de contacter le serveur local." };
+      return { success: false, message: "Le serveur ne répond pas. Vérifiez votre connexion." };
     }
   };
 
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const url = `${API_BASE_URL.replace(/\/$/, "")}/login`;
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -74,7 +83,8 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: data.message || "Identifiants incorrects" };
       }
     } catch (error) {
-      return { success: false, message: "Erreur réseau." };
+      console.error("Erreur Login:", error);
+      return { success: false, message: "Erreur réseau ou serveur injoignable." };
     }
   };
 

@@ -5,17 +5,17 @@ const cors = require('cors');
 const helmet = require('helmet'); 
 const rateLimit = require('express-rate-limit'); 
 const morgan = require('morgan'); 
-const path = require('path'); // Nécessaire pour servir les fichiers statiques si besoin
 
 const app = express();
 
 // --- 1. SÉCURITÉ & PERFORMANCE ---
 app.use(helmet({
-    crossOriginResourcePolicy: false, // Permet d'afficher les images de domaines tiers (ImgBB)
+    crossOriginResourcePolicy: false, 
 })); 
 app.use(morgan('dev')); 
 app.use(express.json({ limit: '10kb' })); 
 
+// Limiteur de requêtes pour protéger l'API
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
@@ -23,6 +23,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// Configuration CORS mise à jour pour inclure les domaines de dev et de prod
 app.use(cors({
     origin: [
       'https://xpress-braids.vercel.app', 
@@ -48,6 +49,15 @@ mongoose.connect(mongoURI)
   });
 
 // --- 3. ROUTES ---
+
+// ✅ AJOUT : Route de base pour corriger le "HEAD / 404" sur Render
+app.get('/', (req, res) => {
+    res.status(200).json({ 
+        status: "success", 
+        message: "API Xpress-braids (NYC Studio) est en ligne" 
+    });
+});
+
 const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const serviceRoutes = require('./routes/services'); 
@@ -55,9 +65,6 @@ const serviceRoutes = require('./routes/services');
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/services', serviceRoutes); 
-
-// Optionnel : Servir un dossier uploads si tu décides de stocker localement
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // --- 4. GESTION DES ERREURS ---
 app.use((req, res) => {
