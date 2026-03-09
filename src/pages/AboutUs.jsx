@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Heart, Star } from 'lucide-react';
+import { Sparkles, Heart, Star, ShieldCheck, Zap } from 'lucide-react';
 
 const AboutUs = () => {
   return (
@@ -18,20 +18,26 @@ const AboutUs = () => {
           </div>
           
           <h1 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-none text-white">
-            More than <br /> a Style, <span className="text-brand-pink">A Legacy.</span>
+            Hello, this is <br /> your girl <span className="text-brand-pink">Phiphi.</span>
           </h1>
           
           <p className="text-xl font-medium text-white/80 leading-relaxed italic border-l-4 border-brand-pink pl-6">
-            "Xpress-Braids isn't just a studio; it’s a sanctuary where ancestral artistry meets modern Manhattan elegance."
+            "I am a talented and versatile hair braider with experience in a variety of techniques, including cornrows, box braids, Senegalese twists, and crochet styles."
           </p>
           
-          <div className="space-y-6 text-white/40 leading-relaxed max-w-lg font-medium">
+          <div className="space-y-6 text-white/60 leading-relaxed max-w-lg font-medium">
             <p>
-              Founded by PHIPHI, our studio was born from a vision to redefine the braiding experience. We combine centuries-old techniques with the precision and pace of Maryland life.
+              I welcome all hair textures, serve all genders, and offer options for your budget. I focus on creating clean, polished results while ensuring comfort and style.
             </p>
             <p>
-              Every crown we touch is treated as a masterpiece. We prioritize the health of your natural hair while delivering high-fashion results that turn heads from Harlem to Wall Street.
+              With a keen sense of design, steady hands, and a client-first approach, I deliver looks that last and service you can trust.
             </p>
+            <div className="pt-4 p-6 bg-white/5 rounded-2xl border border-white/10">
+               <p className="text-brand-pink font-bold uppercase tracking-widest text-xs mb-2">Our Promise at Xpress Braids</p>
+               <p className="text-white/80 italic">
+                "We respect your time, care for your hair, and consider your budget—providing quick and flawless work that fits your lifestyle."
+               </p>
+            </div>
           </div>
         </div>
 
@@ -48,8 +54,9 @@ const AboutUs = () => {
           
           {/* Floating Experience Badge - Rose & Noir */}
           <div className="absolute -bottom-10 -left-10 bg-brand-pink text-white p-10 rounded-full shadow-[0_0_50px_rgba(255,45,120,0.3)] flex flex-col items-center animate-float border-4 border-brand-black">
-            <span className="text-white font-black text-4xl">10+</span>
-            <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/80">Years Exp.</span>
+            <Zap size={24} className="mb-1" />
+            <span className="text-white font-black text-2xl uppercase">Xpress</span>
+            <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/80">Flawless</span>
           </div>
         </div>
       </div>
