@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Clock, Sparkles, ArrowUpRight, Scissors, Star } from 'lucide-react';
+import { Clock, Sparkles, ArrowUpRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
@@ -23,10 +23,20 @@ const Services = () => {
     fetchServices();
   }, []);
 
+  // --- SKELETON LOADING (Plus fluide qu'un simple spinner) ---
   if (loading) return (
-    <div className="min-h-screen bg-brand-black flex flex-col items-center justify-center">
-      <div className="w-12 h-12 border-4 border-white/10 border-t-brand-pink rounded-full animate-spin mb-4"></div>
-      <p className="font-black uppercase tracking-[0.4em] text-brand-pink">Curating Menu...</p>
+    <div className="min-h-screen bg-brand-black pt-40 px-6">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
+        {[1, 2, 3, 4].map((n) => (
+          <div key={n} className="space-y-6 animate-pulse">
+            <div className="aspect-[2/3] bg-white/5 rounded-[2.5rem] w-full max-w-[340px]" />
+            <div className="space-y-3 w-[340px]">
+              <div className="h-4 bg-brand-pink/20 rounded w-1/4" />
+              <div className="h-8 bg-white/10 rounded w-3/4" />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 
@@ -46,20 +56,28 @@ const Services = () => {
         {services.map((service, index) => (
           <div key={service._id} className={`group relative flex flex-col items-center lg:items-start ${index % 2 === 1 ? 'md:mt-24' : ''}`}>
             
-            {/* Image Card */}
+            {/* Image Card avec Chargement Optimisé */}
             <div className="relative w-full max-w-[340px] aspect-[2/3] overflow-visible"> 
-              <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-white/5 p-2 shadow-2xl transition-all duration-700 group-hover:-translate-y-3 border border-white/10 group-hover:border-brand-pink/50">
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-white/5 p-2 shadow-2xl transition-all duration-700 group-hover:-translate-y-3 border border-white/10 group-hover:border-brand-pink/50 relative">
+                
+                {/* Placeholder pendant le chargement de l'image */}
+                <div className="absolute inset-0 bg-white/5 animate-pulse flex items-center justify-center">
+                   <div className="w-6 h-6 border-2 border-brand-pink/20 border-t-brand-pink rounded-full animate-spin" />
+                </div>
+
                 <div className="w-full h-full rounded-[2rem] overflow-hidden relative">
                   <img 
                     src={service.image} 
                     alt={service.name} 
-                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                    loading="lazy"
+                    onLoad={(e) => e.target.classList.remove('opacity-0')}
+                    className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 opacity-0" 
                   />
                   <div className="absolute inset-0 bg-brand-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
               
-              {/* --- BADGE DE PRIX ROSE --- */}
+              {/* Badge Prix */}
               <div className="absolute -top-4 -right-4 z-10">
                 <div className="relative flex items-center justify-center">
                   <div className="bg-brand-pink w-16 h-16 rounded-tr-[2rem] rounded-bl-[2rem] rounded-tl-md rounded-br-md shadow-[0_0_20px_rgba(255,45,120,0.4)] flex items-center justify-center transform rotate-12 group-hover:rotate-0 transition-transform duration-500 border-2 border-brand-black">
@@ -70,7 +88,7 @@ const Services = () => {
                 </div>
               </div>
 
-              {/* Badge Signature */}
+              {/* Badge Premium */}
               <div className="absolute bottom-6 left-6 z-10">
                  <span className="bg-brand-pink/80 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     Premium Style
