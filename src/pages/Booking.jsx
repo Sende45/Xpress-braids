@@ -151,7 +151,7 @@ const Booking = () => {
                 <div className="space-y-6">
                   <div>
                     <p className="text-2xl font-black uppercase italic leading-none">{selectedService.name}</p>
-                    <p className="text-[10px] font-bold text-brand-gold mt-1 uppercase">NYC Studio Session</p>
+                    <p className="text-[10px] font-bold text-brand-gold mt-1 uppercase">Maryland Studio Session</p>
                   </div>
                   <div className="space-y-3 pt-4 border-t border-black/5 text-[10px] font-black uppercase tracking-widest">
                     <div className="flex items-center gap-3"><CalendarIcon size={14} className="text-brand-gold" /> {bookingData.date || "Date missing"}</div>

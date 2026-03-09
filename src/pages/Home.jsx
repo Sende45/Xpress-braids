@@ -26,7 +26,7 @@ const Home = () => {
           <div className="lg:col-span-7 space-y-8 lg:space-y-12 z-10 text-center lg:text-left">
             <div className="inline-flex items-center gap-3 bg-white/60 backdrop-blur-xl px-5 py-2.5 rounded-full border border-white/50 shadow-xl shadow-brand-gold/10 text-stone-900">
               <Sparkles size={16} className="text-brand-gold animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.4em]">NY's Finest Braid Experience • Harlem</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em]">NY's Finest Braid Experience • Maryland</span>
             </div>
 
             <h1 className="text-6xl sm:text-8xl md:text-9xl lg:text-[140px] font-black leading-[0.85] tracking-tighter uppercase italic text-stone-900">

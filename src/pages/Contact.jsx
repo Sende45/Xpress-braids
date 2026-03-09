@@ -30,7 +30,7 @@ const Contact = () => {
             <MapPin size={32} />
           </div>
           <h3 className="text-2xl font-black uppercase italic mb-4 text-stone-900">Our Studio</h3>
-          <p className="text-stone-500 text-sm font-medium">125th St. Harlem<br />New York, NY 10027</p>
+          <p className="text-stone-500 text-sm font-medium">125th St. Harlem<br />Maryland, 10027</p>
           <div className="absolute top-4 right-4 text-brand-gold/20 group-hover:text-brand-gold/40 transition-colors">
             <Sparkles size={24} />
           </div>

@@ -10,7 +10,7 @@ const AboutUs = () => {
         <div className="space-y-10 reveal">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-gold/30 bg-white shadow-sm">
             <Sparkles size={14} className="text-brand-gold" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-stone-900">Est. 2026 • NYC & Harlem</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-stone-900">Est. 2026 • Maryland</span>
           </div>
           
           <h1 className="text-6xl md:text-8xl font-black uppercase italic tracking-tighter leading-none text-stone-900">
@@ -23,7 +23,7 @@ const AboutUs = () => {
           
           <div className="space-y-6 text-stone-500 leading-relaxed max-w-lg">
             <p>
-              Founded by PHIPHI, our studio was born from a vision to redefine the braiding experience. We combine centuries-old techniques with the precision and pace of New York City life.
+              Founded by PHIPHI, our studio was born from a vision to redefine the braiding experience. We combine centuries-old techniques with the precision and pace of Maryland life.
             </p>
             <p>
               Every crown we touch is treated as a masterpiece. We prioritize the health of your natural hair while delivering high-fashion results that turn heads from Harlem to Wall Street.
