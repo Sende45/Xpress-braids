@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Clock, Sparkles, ArrowUpRight, Scissors } from 'lucide-react';
+import { Clock, Sparkles, ArrowUpRight, Scissors, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Services = () => {
@@ -10,17 +10,12 @@ const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        // --- CONFIGURATION DYNAMIQUE CORRIGÉE ---
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-        
-        // Nettoyage de l'URL pour s'assurer que l'appel tape sur /api/services 
-        // et non sur /api/auth/api/services
         const cleanBase = apiUrl.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
-        
         const response = await axios.get(`${cleanBase}/api/services`);
         setServices(response.data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des services:", error);
+        console.error("Erreur API:", error);
       } finally {
         setLoading(false);
       }
@@ -29,96 +24,82 @@ const Services = () => {
   }, []);
 
   if (loading) return (
-    <div className="min-h-screen bg-[#FDFCF8] flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center">
       <div className="w-12 h-12 border-4 border-stone-200 border-t-brand-gold rounded-full animate-spin mb-4"></div>
-      <p className="font-black uppercase tracking-[0.4em] text-stone-400">Loading Studio Menu...</p>
+      <p className="font-black uppercase tracking-[0.4em] text-brand-gold">Curating Menu...</p>
     </div>
   );
 
   return (
-    <div className="bg-[#FDFCF8] min-h-screen pt-40 pb-20 px-6">
-      {/* Header Section */}
-      <div className="max-w-7xl mx-auto mb-20">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-gold/30 bg-brand-gold/5 mb-6">
-          <Sparkles size={12} className="text-brand-gold" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">NYC Master Stylists</span>
+    <div className="bg-brand-cream min-h-screen pt-40 pb-20 px-6">
+      <div className="max-w-7xl mx-auto mb-32 text-center lg:text-left">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-gold/30 bg-white shadow-xl mb-8">
+          <Sparkles size={14} className="text-brand-gold" />
+          <span className="text-[10px] font-black uppercase tracking-widest">Master Artistry Menu</span>
         </div>
-        <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-stone-900">
-          Our <span className="text-brand-gold italic">Gallery</span>
+        <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none text-stone-900">
+          The <span className="text-brand-gold italic">Lookbook</span>
         </h1>
-        <p className="mt-6 text-stone-500 font-medium uppercase tracking-widest text-xs max-w-md leading-relaxed">
-          Discover our signature techniques and high-end styles crafted for the modern woman.
-        </p>
       </div>
 
-      {/* Services Grid */}
-      <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-32">
+      <section className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-40">
         {services.map((service, index) => (
-          <div 
-            key={service._id} 
-            className={`group relative flex flex-col gap-8 ${index % 2 === 1 ? 'md:mt-32' : ''}`}
-          >
-            {/* Image Container */}
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-stone-200 shadow-2xl transition-transform duration-700 group-hover:scale-[1.01]">
-              <img 
-                src={service.image} 
-                alt={service.name}
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-              />
-              {/* Price Tag Overlay */}
-              <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-md px-5 py-2 rounded-full shadow-xl border border-white/20">
-                <span className="text-2xl font-black text-black">${service.price}</span>
+          <div key={service._id} className={`group relative ${index % 2 === 1 ? 'md:mt-32' : ''}`}>
+            {/* Image Card Luxe */}
+            <div className="relative aspect-[3/4] overflow-hidden rounded-[3.5rem] bg-white p-4 shadow-2xl transition-all duration-700 hover:-translate-y-4">
+              <div className="w-full h-full rounded-[2.8rem] overflow-hidden relative">
+                <img src={service.image} alt={service.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               
-              {/* Category Badge Overlay */}
-              <div className="absolute bottom-8 left-8">
-                 <span className="px-4 py-1.5 bg-black/50 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-lg border border-white/10">
-                   {service.category}
-                 </span>
+              {/* Floating Price */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 bg-brand-gold text-white rounded-full flex items-center justify-center text-2xl font-black shadow-2xl border-4 border-brand-cream transform group-hover:scale-110 transition-transform">
+                ${service.price}
               </div>
             </div>
 
-            {/* Info Container */}
-            <div className="space-y-4 px-2">
-              <div className="flex justify-between items-end border-b border-stone-200 pb-6">
+            {/* Info Section */}
+            <div className="mt-12 space-y-6">
+              <div className="flex justify-between items-start">
                 <div>
-                  <h3 className="text-3xl font-black uppercase tracking-tight text-stone-900 leading-none">{service.name}</h3>
-                  <div className="flex items-center gap-4 mt-4 text-stone-400 text-[10px] font-black uppercase tracking-widest">
-                    <span className="flex items-center gap-1.5 bg-stone-100 px-2 py-1 rounded-md">
-                      <Clock size={14} className="text-brand-gold" /> {service.duration || '60'} min
-                    </span>
-                    <span className="flex items-center gap-1.5 bg-stone-100 px-2 py-1 rounded-md">
-                      <Scissors size={14} className="text-brand-gold" /> Studio Session
-                    </span>
-                  </div>
+                  <span className="text-brand-gold text-xs font-black uppercase tracking-widest mb-2 block">{service.category}</span>
+                  <h3 className="text-4xl lg:text-5xl font-black uppercase italic text-stone-900">{service.name}</h3>
                 </div>
-                <Link 
-                  to={`/booking?service=${service._id}`} 
-                  className="w-16 h-16 bg-stone-900 text-white rounded-full flex items-center justify-center hover:bg-brand-gold hover:text-black transition-all hover:-rotate-12 shadow-lg group/btn"
-                >
-                  <ArrowUpRight size={28} className="group-hover/btn:scale-110 transition-transform" />
+                <div className="flex flex-col items-end gap-2">
+                   <div className="flex items-center gap-1 text-brand-gold">
+                      {[1,2,3,4,5].map(s => <Star key={s} size={10} fill="currentColor" />)}
+                   </div>
+                   <span className="text-[10px] font-black text-stone-400">Verified Style</span>
+                </div>
+              </div>
+
+              <p className="text-stone-500 font-medium text-lg leading-relaxed max-w-md italic border-l-4 border-brand-gold/20 pl-6">
+                "{service.description}"
+              </p>
+
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 text-stone-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                  <Clock size={16} className="text-brand-gold" /> {service.duration || '180'} MINS
+                </div>
+                <Link to={`/booking?service=${service._id}`} className="flex items-center gap-3 bg-stone-900 text-white px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-brand-gold hover:text-stone-900 transition-all shadow-lg group">
+                  Book Experience
+                  <ArrowUpRight size={16} className="group-hover:rotate-45 transition-transform" />
                 </Link>
               </div>
-              <p className="text-stone-600 leading-relaxed font-medium text-sm max-w-lg">
-                {service.description}
-              </p>
             </div>
           </div>
         ))}
       </section>
 
-      {/* Footer CTA */}
-      <div className="max-w-7xl mx-auto mt-40 text-center py-20 border-t border-stone-200">
-        <h2 className="text-4xl font-black uppercase tracking-tighter mb-8">Ready for your transformation?</h2>
-        <Link 
-          to="/booking" 
-          className="inline-block bg-stone-900 text-white px-10 py-5 rounded-full font-black uppercase tracking-widest hover:bg-brand-gold hover:text-black transition-all hover:scale-105"
-        >
-          Book Your Session Now
+      {/* FOOTER CTA LUXE */}
+      <div className="max-w-5xl mx-auto mt-60 p-20 rounded-[4rem] bg-brand-black text-white text-center relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/20 blur-[100px] rounded-full" />
+        <h2 className="text-5xl font-black uppercase italic mb-8 relative z-10">Don't Settle For <br /><span className="text-brand-gold">Basic.</span></h2>
+        <Link to="/booking" className="relative z-10 inline-block bg-white text-brand-black px-12 py-6 rounded-full font-black uppercase tracking-widest hover:bg-brand-gold transition-all">
+          Secure Your Spot
         </Link>
       </div>
     </div>
   );
 };
-
 export default Services;

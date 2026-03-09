@@ -107,7 +107,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* --- LIFESTYLE & TRANSITION TO SERVICES (LA NOUVELLE MODIF) --- */}
+      {/* --- LIFESTYLE & TRANSITION TO SERVICES (REPRODUCTION PHOTO 2 & 3 AVEC DIMENSIONS RÉDUITES) --- */}
       <section className="py-32 lg:py-48 px-6 bg-brand-cream relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-brand-gold/10 rounded-full pointer-events-none" />
 
@@ -134,20 +134,33 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="relative grid grid-cols-2 gap-4 h-full">
-            <div className="space-y-4 pt-12">
-              <div className="aspect-[3/4] bg-stone-200 rounded-3xl overflow-hidden shadow-xl rotate-[-2deg]">
+          {/* Grid Lifestyle avec Cartes Réduites (Mix entre ton ancien effet et les prix) */}
+          <div className="relative grid grid-cols-2 gap-6 h-full items-start">
+            <div className="space-y-6 pt-12">
+              <div className="relative group aspect-[4/5] w-full rounded-[2rem] overflow-hidden shadow-xl rotate-[-2deg] transition-transform hover:rotate-0 duration-500">
                 <img src="https://images.unsplash.com/photo-1621333100653-53a5c7776521?q=80&w=400" className="w-full h-full object-cover" alt="Detail" />
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-lg">
+                    <span className="text-xs font-black text-black">$200</span>
+                </div>
+                <div className="absolute bottom-4 left-4">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-white bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">Signature</span>
+                </div>
               </div>
               <div className="aspect-square bg-brand-gold/10 rounded-full flex items-center justify-center text-brand-gold animate-pulse">
                  <Star size={40} fill="currentColor" />
               </div>
             </div>
-            <div className="space-y-4">
-              <div className="aspect-[4/5] bg-stone-200 rounded-[3rem] overflow-hidden shadow-2xl rotate-[2deg]">
+            <div className="space-y-6">
+              <div className="relative group aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-2xl rotate-[2deg] transition-transform hover:rotate-0 duration-500">
                 <img src="https://images.unsplash.com/photo-1614949533314-72410a823f99?q=80&w=400" className="w-full h-full object-cover" alt="Vibe" />
+                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-lg">
+                    <span className="text-xs font-black text-black">$120</span>
+                </div>
+                <div className="absolute bottom-4 left-4">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-white bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">Trending</span>
+                </div>
               </div>
-              <div className="aspect-[3/4] bg-stone-200 rounded-2xl overflow-hidden shadow-lg">
+              <div className="aspect-[3/4] bg-stone-200 rounded-2xl overflow-hidden shadow-lg transition-all duration-700 hover:scale-105">
                 <img src="https://images.unsplash.com/photo-1595476108010-b4d1f80d77d2?q=80&w=400" className="w-full h-full object-cover" alt="Finish" />
               </div>
             </div>

@@ -6,15 +6,15 @@
   --color-brand-gray: #121212;
   --color-brand-cream: #F9F7F2;
   
-  --font-display: "Clash Display", sans-serif;
-  
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 @layer base {
   body {
     @apply bg-brand-cream text-brand-black selection:bg-brand-gold/30 antialiased;
     font-feature-settings: "ss01", "ss02", "cv01";
+    scroll-behavior: smooth;
   }
 
   /* Scrollbar élégante (NYC Style) */
@@ -30,22 +30,23 @@
 }
 
 @layer components {
-  /* Effet de texte contour (Outline) */
+  /* --- TYPOGRAPHIE --- */
   .stroke-text {
     -webkit-text-stroke: 1.5px var(--color-brand-black);
     color: transparent;
-    transition: all 0.5s var(--ease-fluid);
+    transition: all 0.6s var(--ease-fluid);
   }
 
   .group:hover .stroke-text {
-    -webkit-text-stroke: 1.5px var(--color-brand-gold);
+    -webkit-text-stroke: 1px var(--color-brand-gold);
+    @apply opacity-80;
   }
 
-  /* Système de révélation au scroll */
+  /* --- SYSTÈME DE RÉVÉLATION --- */
   .reveal {
     opacity: 0;
-    transform: translateY(30px);
-    animation: reveal-in 0.8s var(--ease-fluid) forwards;
+    transform: translateY(40px);
+    animation: reveal-in 1.2s var(--ease-out-expo) forwards;
   }
 
   @keyframes reveal-in {
@@ -55,28 +56,52 @@
     }
   }
 
-  /* Effet de grain de papier */
+  /* --- L'EFFET RETENU : GRAIN + GLOW AU SURVOL (NYC MAGAZINE STYLE) --- */
   .bg-grain {
     position: relative;
   }
+  /* L'effet Grain discret (Ancien Home) */
   .bg-grain::before {
     content: "";
-    position: fixed; /* Fixé pour couvrir tout l'écran au scroll */
+    position: fixed;
     inset: 0;
-    opacity: 0.04;
+    opacity: 0.05; /* Plus discret pour la féminité */
     pointer-events: none;
-    z-index: 50;
+    z-index: 99;
     background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    filter: contrast(150%) brightness(100%);
+    filter: contrast(160%) brightness(100%);
+  }
+
+  /* L'effet "Glow" au survol pour les cartes de services (Ultra Attractive) */
+  .group:hover .relative.p-4 {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); /* L'éclat doré */
+    transition: box-shadow 0.6s var(--ease-out-expo);
   }
 }
 
-/* Animations Utilitaires */
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+/* --- ANIMATIONS --- */
+
+/* Flottement doux pour les coeurs et étoiles (Cute Factor) */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+/* Rotation lente pour les icônes Sparkles ou Star (Cute Factor) */
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Effet Shimmer (Brillance sur les boutons au survol) */
 .animate-shimmer {
   position: relative;
   overflow: hidden;
@@ -89,24 +114,35 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.4),
     transparent
   );
-  animation: shimmer 2s infinite;
+  animation: shimmer 3s infinite;
 }
 
-/* Effet de flottement pour les éléments décoratifs */
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+/* Apparition en fondu doux pour les images de la galerie */
+.fade-in-view {
+  animation: fade-in-scale 0.8s var(--ease-fluid) forwards;
+}
+
+@keyframes fade-in-scale {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Correction pour les inputs de date sur mobile */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0);
+  filter: invert(0.2);
   cursor: pointer;
 }
