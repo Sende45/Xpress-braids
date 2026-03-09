@@ -42,29 +42,44 @@ const Services = () => {
         </h1>
       </div>
 
-      {/* Grid avec Gap plus large et colonnes plus étroites */}
       <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-32">
         {services.map((service, index) => (
           <div key={service._id} className={`group relative flex flex-col items-center lg:items-start ${index % 2 === 1 ? 'md:mt-24' : ''}`}>
             
-            {/* Image Card - Taille Diminuée (max-w-sm et aspect-[2/3]) */}
-            <div className="relative w-full max-w-[340px] aspect-[2/3] overflow-hidden rounded-[2.5rem] bg-white p-3 shadow-2xl transition-all duration-700 hover:-translate-y-3">
-              <div className="w-full h-full rounded-[1.8rem] overflow-hidden relative">
-                <img 
-                  src={service.image} 
-                  alt={service.name} 
-                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
-                />
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Image Card - Taille Diminuée */}
+            <div className="relative w-full max-w-[340px] aspect-[2/3] overflow-visible"> 
+              <div className="w-full h-full rounded-[2.5rem] overflow-hidden bg-white p-2 shadow-2xl transition-all duration-700 group-hover:-translate-y-3">
+                <div className="w-full h-full rounded-[2rem] overflow-hidden relative">
+                  <img 
+                    src={service.image} 
+                    alt={service.name} 
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                  />
+                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
               </div>
               
-              {/* Floating Price - Taille ajustée */}
-              <div className="absolute -top-4 -right-4 w-16 h-16 bg-brand-gold text-white rounded-full flex items-center justify-center text-lg font-black shadow-2xl border-4 border-brand-cream transform group-hover:scale-110 transition-transform">
-                ${service.price}
+              {/* --- BADGE DE PRIX ULTRA VISIBLE (STYLE LUXE) --- */}
+              <div className="absolute -top-4 -right-4 z-10">
+                <div className="relative flex items-center justify-center">
+                  {/* Forme de feuille dorée */}
+                  <div className="bg-brand-gold w-16 h-16 rounded-tr-[2rem] rounded-bl-[2rem] rounded-tl-md rounded-br-md shadow-lg flex items-center justify-center transform rotate-12 group-hover:rotate-0 transition-transform duration-500 border-2 border-white">
+                    <span className="text-white text-xl font-black -rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                      ${service.price}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Petit badge Signature optionnel en bas */}
+              <div className="absolute bottom-6 left-6 z-10">
+                 <span className="bg-black/60 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    Premium Style
+                 </span>
               </div>
             </div>
 
-            {/* Info Section - Alignée sur la largeur de la carte */}
+            {/* Info Section */}
             <div className="mt-10 space-y-4 w-full max-w-[340px]">
               <div className="flex justify-between items-start">
                 <div>
@@ -99,7 +114,7 @@ const Services = () => {
         ))}
       </section>
 
-      {/* FOOTER CTA LUXE */}
+      {/* FOOTER CTA */}
       <div className="max-w-4xl mx-auto mt-48 p-12 lg:p-20 rounded-[3rem] bg-brand-black text-white text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-brand-gold/20 blur-[80px] rounded-full" />
         <h2 className="text-4xl font-black uppercase italic mb-8 relative z-10 leading-tight">Don't Settle For <br /><span className="text-brand-gold">Basic.</span></h2>
