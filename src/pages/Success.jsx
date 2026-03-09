@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { CheckCircle, Calendar, Clock, Scissors, ArrowRight } from 'lucide-react';
+import { CheckCircle, Calendar, Clock, Scissors, ArrowRight, Loader2 } from 'lucide-react';
 
 const Success = () => {
     const [searchParams] = useSearchParams();
@@ -9,12 +9,20 @@ const Success = () => {
     const [loading, setLoading] = useState(true);
     const [booking, setBooking] = useState(null);
 
+    // --- CONFIGURATION DYNAMIQUE CORRIGÉE ---
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    // On retire "/api/auth" pour taper sur la route de confirmation du booking
+    const CLEAN_BASE = API_URL.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
+
     useEffect(() => {
         const confirmPayment = async () => {
-            if (!sessionId) return;
+            if (!sessionId) {
+                setLoading(false);
+                return;
+            }
             try {
-                // Appel à ton API pour confirmer le paiement en base de données
-                const response = await axios.get(`http://localhost:5000/api/bookings/confirm/${sessionId}`);
+                // Appel à l'API Render avec l'URL nettoyée
+                const response = await axios.get(`${CLEAN_BASE}/api/bookings/confirm/${sessionId}`);
                 
                 if (response.data.success) {
                     setBooking(response.data.booking);
@@ -27,13 +35,13 @@ const Success = () => {
         };
 
         confirmPayment();
-    }, [sessionId]);
+    }, [sessionId, CLEAN_BASE]);
 
     if (loading) {
         return (
             <div className="min-h-screen bg-brand-cream flex flex-col items-center justify-center">
-                <div className="w-12 h-12 border-4 border-brand-gold/20 border-t-brand-gold rounded-full animate-spin mb-4"></div>
-                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-gold animate-pulse">
+                <Loader2 className="w-12 h-12 text-brand-gold animate-spin mb-4" />
+                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-gold animate-pulse text-center">
                     Securing your appointment...
                 </p>
             </div>
@@ -42,7 +50,7 @@ const Success = () => {
 
     return (
         <div className="min-h-screen bg-brand-cream bg-grain flex items-center justify-center px-6 py-20">
-            <div className="max-w-md w-full space-y-8 reveal text-center">
+            <div className="max-w-md w-full space-y-8 text-center">
                 
                 {/* Icone Succès Luxe */}
                 <div className="relative inline-block">
@@ -64,8 +72,8 @@ const Success = () => {
                 </div>
 
                 {/* Carte de Récapitulatif Dynamique */}
-                {booking && (
-                    <div className="bg-white/40 backdrop-blur-md border border-white/20 p-8 rounded-[2.5rem] text-left space-y-6 shadow-2xl">
+                {booking ? (
+                    <div className="bg-white/40 backdrop-blur-md border border-white/20 p-8 rounded-[2.5rem] text-left space-y-6 shadow-2xl animate-in fade-in zoom-in duration-500">
                         <div className="flex items-center gap-4 pb-4 border-b border-brand-black/5">
                             <div className="p-3 bg-brand-black rounded-2xl text-brand-gold">
                                 <Scissors size={20} />
@@ -98,6 +106,10 @@ const Success = () => {
                                 Transaction ID: <span className="text-brand-black/60">{sessionId?.substring(0, 18)}...</span>
                             </p>
                         </div>
+                    </div>
+                ) : (
+                    <div className="p-6 bg-red-50 text-red-500 rounded-2xl text-[10px] font-black uppercase">
+                        Payment verification pending. Please check your email.
                     </div>
                 )}
 

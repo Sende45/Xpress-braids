@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Star, Zap, ShieldCheck, ArrowRight, ArrowUpRight, Play } from 'lucide-react';
 
+// Importation de ton image locale
+import braidsImg from '../assets/braids2.png';
+
 const Home = () => {
   return (
     <div className="bg-brand-cream overflow-hidden bg-grain">
@@ -56,12 +59,12 @@ const Home = () => {
 
           {/* Image: Right Column (5/12) */}
           <div className="lg:col-span-5 relative z-20 hidden lg:block h-full">
-            <div className="relative aspect-[4/5] w-full bg-neutral-200 rounded-[4rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 group animate-shimmer">
-             <img 
-              src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d"
-              alt="Test"
-              className="w-full h-full object-cover"
-            />
+            <div className="relative aspect-[4/5] w-full bg-neutral-200 rounded-[4rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 group">
+              <img 
+                src={braidsImg} 
+                alt="Xpress Braids Styling"
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             
