@@ -9,6 +9,8 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Success from './pages/Success';
+import AboutUs from './pages/AboutUs'; // New Import
+import Contact from './pages/Contact'; // New Import
 import AdminDashboard from './pages/AdminDashboard'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
 
@@ -21,15 +23,17 @@ export default function App() {
 
         <main className="flex-grow">
           <Routes>
-            {/* Routes Publiques */}
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/about" element={<AboutUs />} /> {/* New Route */}
+            <Route path="/contact" element={<Contact />} /> {/* New Route */}
             <Route path="/booking" element={<Booking />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/success" element={<Success />} />
 
-            {/* Profil Client */}
+            {/* Client Profile */}
             <Route 
               path="/profile" 
               element={
@@ -39,7 +43,7 @@ export default function App() {
               } 
             />
 
-            {/* Dashboard Admin */}
+            {/* Admin Dashboard */}
             <Route 
               path="/admin-control-center" 
               element={
@@ -49,7 +53,7 @@ export default function App() {
               } 
             />
             
-            {/* Redirection automatique pour éviter les erreurs 404 sur /studio */}
+            {/* Automatic redirection for /studio */}
             <Route path="/studio" element={<Services />} />
           </Routes>
         </main>
