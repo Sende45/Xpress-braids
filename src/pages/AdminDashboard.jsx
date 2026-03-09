@@ -144,8 +144,8 @@ const AdminDashboard = () => {
   if (loading) return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
       <div className="text-center space-y-4">
-        <Loader2 className="w-12 h-12 text-brand-gold animate-spin mx-auto" />
-        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-gold">Master System Loading...</p>
+        <Loader2 className="w-12 h-12 text-pink-500 animate-spin mx-auto" />
+        <p className="text-[10px] font-black uppercase tracking-[0.5em] text-pink-500">Master System Loading...</p>
       </div>
     </div>
   );
@@ -157,35 +157,35 @@ const AdminDashboard = () => {
         {/* --- HEADER SECTION --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-gold/30 bg-brand-gold/5">
-              <ShieldCheck size={12} className="text-brand-gold" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-brand-gold">Root Admin Access</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/5">
+              <ShieldCheck size={12} className="text-pink-500" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-pink-500">Root Admin Access</span>
             </div>
             <h1 className="text-7xl font-black uppercase italic tracking-tighter leading-none">
-              Control <br /> <span className="text-brand-gold">{activeTab === 'bookings' ? 'Center' : 'Studio'}</span>
+              Control <br /> <span className="text-pink-500">{activeTab === 'bookings' ? 'Center' : 'Studio'}</span>
             </h1>
           </div>
 
           <div className="flex flex-col md:flex-row gap-6 w-full md:w-auto">
             <div className="relative group flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-brand-gold" size={16} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-pink-500" size={16} />
               <input 
                 type="text" 
                 placeholder="SEARCH DATABASE..." 
-                className="bg-white/5 border border-white/10 py-4 pl-12 pr-8 rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-gold w-full md:w-64 transition-all"
+                className="bg-white/5 border border-white/10 py-4 pl-12 pr-8 rounded-2xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-pink-500 w-full md:w-64 transition-all"
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex bg-white/5 p-1 rounded-2xl border border-white/10">
               <button 
                 onClick={() => setActiveTab('bookings')}
-                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bookings' ? 'bg-brand-gold text-black' : 'text-white/40 hover:text-white'}`}
+                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bookings' ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'text-white/40 hover:text-white'}`}
               >
                 Bookings
               </button>
               <button 
                 onClick={() => setActiveTab('gallery')}
-                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'gallery' ? 'bg-brand-gold text-black' : 'text-white/40 hover:text-white'}`}
+                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'gallery' ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/20' : 'text-white/40 hover:text-white'}`}
               >
                 Gallery
               </button>
@@ -205,18 +205,18 @@ const AdminDashboard = () => {
             {/* BOOKINGS LIST */}
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-white/10 pb-6">
-                <h2 className="text-xs font-black uppercase tracking-[0.3em] italic text-brand-gold">Registry Stream</h2>
+                <h2 className="text-xs font-black uppercase tracking-[0.3em] italic text-pink-500">Registry Stream</h2>
                 <div className="text-[10px] font-black uppercase tracking-widest text-white/20">
-                  <span className="text-brand-gold">{filteredBookings.length}</span> Entries Found
+                  <span className="text-pink-500">{filteredBookings.length}</span> Entries Found
                 </div>
               </div>
 
               <div className="grid gap-4">
                 {filteredBookings.map((b) => (
-                  <div key={b._id} className="group bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-brand-gold/30 p-6 md:p-8 rounded-[2.5rem] transition-all duration-500">
+                  <div key={b._id} className="group bg-white/[0.03] hover:bg-white/[0.06] border border-white/5  p-6 md:p-8 rounded-[2.5rem] transition-all duration-500">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                       <div className="flex items-start gap-6">
-                        <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-brand-gold font-black text-xl group-hover:rotate-6 transition-transform">
+                        <div className="w-16 h-16 bg-black border border-white/10 rounded-2xl flex items-center justify-center text-pink-500 font-black text-xl group-hover:rotate-6 transition-transform shadow-lg shadow-pink-500/5">
                           {b.user?.firstName?.[0] || 'U'}
                         </div>
                         <div className="space-y-2">
@@ -225,8 +225,8 @@ const AdminDashboard = () => {
                             <StatusBadge status={b.status} />
                           </div>
                           <div className="flex flex-wrap gap-4 text-[10px] font-black uppercase tracking-widest text-white/40">
-                            <span className="flex items-center gap-1.5"><Mail size={12}/> {b.user?.email}</span>
-                            <span className="flex items-center gap-1.5 text-brand-gold"><TrendingUp size={12}/> {b.service}</span>
+                            <span className="flex items-center gap-1.5 hover:text-white transition-colors"><Mail size={12}/> {b.user?.email}</span>
+                            <span className="flex items-center gap-1.5 text-pink-500/70"><TrendingUp size={12}/> {b.service}</span>
                           </div>
                         </div>
                       </div>
@@ -234,7 +234,7 @@ const AdminDashboard = () => {
                       <div className="flex flex-row md:flex-col gap-8 md:gap-2">
                         <div className="space-y-1">
                           <p className="text-[8px] font-black uppercase tracking-widest text-white/20">Schedule</p>
-                          <p className="text-xs font-bold uppercase">{b.date} <span className="text-brand-gold mx-2">/</span> {b.time}</p>
+                          <p className="text-xs font-bold uppercase">{b.date} <span className="text-pink-500 mx-2">/</span> {b.time}</p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-[8px] font-black uppercase tracking-widest text-white/20">Security Deposit</p>
@@ -269,7 +269,7 @@ const AdminDashboard = () => {
             {/* ADD SERVICE FORM */}
             <div className="lg:col-span-1">
               <div className="bg-white/[0.03] border border-white/10 p-8 rounded-[2.5rem] sticky top-32">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-brand-gold mb-8">Add Portfolio Asset</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-pink-500 mb-8">Add Portfolio Asset</h3>
                 <form onSubmit={handleAddService} className="space-y-4">
                   <div className="relative group mb-6">
                     <input 
@@ -278,13 +278,13 @@ const AdminDashboard = () => {
                     />
                     <label 
                       htmlFor="img-upload"
-                      className="flex flex-col items-center justify-center gap-4 w-full aspect-video bg-white/5 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-brand-gold transition-all overflow-hidden"
+                      className="flex flex-col items-center justify-center gap-4 w-full aspect-video bg-white/5 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-pink-500/50 transition-all overflow-hidden shadow-pink-500/5"
                     >
                       {newService.image ? (
                         <img src={newService.image} className="w-full h-full object-cover" alt="Preview" />
                       ) : (
                         <>
-                          {uploading ? <Loader2 className="animate-spin text-brand-gold" /> : <UploadCloud className="text-white/20" />}
+                          {uploading ? <Loader2 className="animate-spin text-pink-500" /> : <UploadCloud className="text-white/20" />}
                           <span className="text-[8px] font-black uppercase tracking-widest">Select Work Photo</span>
                         </>
                       )}
@@ -293,18 +293,18 @@ const AdminDashboard = () => {
 
                   <input 
                     type="text" placeholder="SERVICE NAME" 
-                    className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-gold"
+                    className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-pink-500"
                     value={newService.name} onChange={e => setNewService({...newService, name: e.target.value})} required
                   />
                   
                   <div className="grid grid-cols-2 gap-4">
                     <input 
                       type="number" placeholder="PRICE ($)" 
-                      className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-gold"
+                      className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-pink-500"
                       value={newService.price} onChange={e => setNewService({...newService, price: e.target.value})} required
                     />
                     <select 
-                      className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-gold text-white"
+                      className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-pink-500 text-white"
                       value={newService.category} 
                       onChange={e => setNewService({...newService, category: e.target.value})}
                     >
@@ -316,14 +316,14 @@ const AdminDashboard = () => {
 
                   <textarea 
                     placeholder="WORK DESCRIPTION" rows="3"
-                    className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-gold"
+                    className="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest outline-none focus:border-pink-500"
                     value={newService.description} onChange={e => setNewService({...newService, description: e.target.value})}
                   />
                   
                   <button 
                     disabled={uploading}
                     type="submit" 
-                    className="w-full bg-brand-gold text-black font-black uppercase tracking-[0.2em] py-5 rounded-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                    className="w-full bg-pink-500 text-white font-black uppercase tracking-[0.2em] py-5 rounded-xl hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 shadow-lg shadow-pink-500/20"
                   >
                     {uploading ? 'Processing Image...' : 'Deploy to Gallery'}
                   </button>
@@ -334,14 +334,14 @@ const AdminDashboard = () => {
             {/* SERVICES LIST */}
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
               {services.map((service) => (
-                <div key={service._id} className="group relative bg-white/[0.03] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-brand-gold/30 transition-all">
+                <div key={service._id} className="group relative bg-white/[0.03] border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-pink-500/30 transition-all">
                   <div className="aspect-[4/3] overflow-hidden">
                     <img src={service.image} alt={service.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80" />
                   </div>
                   <div className="p-8 flex justify-between items-center bg-gradient-to-t from-black to-transparent">
                     <div>
                       <h4 className="font-black uppercase tracking-tight text-xl">{service.name}</h4>
-                      <p className="text-[10px] font-bold text-brand-gold uppercase tracking-widest">${service.price} — {service.duration}</p>
+                      <p className="text-[10px] font-bold text-pink-500 uppercase tracking-widest">${service.price} — {service.duration}</p>
                     </div>
                     <button 
                       onClick={() => deleteService(service._id)}
@@ -362,15 +362,15 @@ const AdminDashboard = () => {
 
 // --- SUB-COMPONENTS ---
 const StatBox = ({ label, value, icon, sub }) => (
-  <div className="bg-white/[0.03] border border-white/10 p-8 rounded-[3rem] hover:border-brand-gold/40 transition-all group">
+  <div className="bg-white/[0.03] border border-white/10 p-8 rounded-[3rem] hover:border-pink-500/40 transition-all group shadow-pink-500/5">
     <div className="flex justify-between items-start mb-6">
-      <div className="p-4 bg-black rounded-2xl text-brand-gold group-hover:scale-110 transition-transform">{icon}</div>
-      <ArrowUpRight size={14} className="text-white/10 group-hover:text-brand-gold transition-colors" />
+      <div className="p-4 bg-black rounded-2xl text-pink-500 group-hover:scale-110 transition-transform shadow-lg shadow-pink-500/10">{icon}</div>
+      <ArrowUpRight size={14} className="text-white/10 group-hover:text-pink-500 transition-colors" />
     </div>
     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">{label}</p>
     <div className="flex items-baseline gap-2 mt-1">
       <p className="text-4xl font-black italic tracking-tighter">{value}</p>
-      <span className="text-[8px] font-black uppercase tracking-widest text-brand-gold/60">{sub}</span>
+      <span className="text-[8px] font-black uppercase tracking-widest text-pink-500/60">{sub}</span>
     </div>
   </div>
 );

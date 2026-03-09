@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-gold: #D4AF37;
+  /* --- NOUVELLE PALETTE NOIR & ROSE --- */
+  --color-brand-pink: #ec4899;      /* Pink 500 */
+  --color-brand-pink-light: #fdf2f8; /* Pink 50 */
   --color-brand-black: #050505;
   --color-brand-gray: #121212;
-  --color-brand-cream: #F9F7F2;
+  --color-brand-cream: #ffffff;     /* Passage au blanc pour faire ressortir le rose */
   
   --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
@@ -12,34 +14,34 @@
 
 @layer base {
   body {
-    @apply bg-brand-cream text-brand-black selection:bg-brand-gold/30 antialiased;
+    @apply bg-white text-brand-black selection:bg-brand-pink/30 antialiased;
     font-feature-settings: "ss01", "ss02", "cv01";
     scroll-behavior: smooth;
   }
 
-  /* Scrollbar élégante (NYC Style) */
+  /* Scrollbar élégante (Pink NYC Style) */
   ::-webkit-scrollbar {
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-brand-cream;
+    @apply bg-white;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-brand-black/10 rounded-full hover:bg-brand-gold/50 transition-colors;
+    @apply bg-brand-pink/20 rounded-full hover:bg-brand-pink/50 transition-colors;
   }
 }
 
 @layer components {
-  /* --- TYPOGRAPHIE --- */
-  .stroke-text {
-    -webkit-text-stroke: 1.5px var(--color-brand-black);
+  /* --- TYPOGRAPHIE ROSE --- */
+  .stroke-text-pink {
+    -webkit-text-stroke: 1.5px var(--color-brand-pink);
     color: transparent;
     transition: all 0.6s var(--ease-fluid);
   }
 
-  .group:hover .stroke-text {
-    -webkit-text-stroke: 1px var(--color-brand-gold);
-    @apply opacity-80;
+  .group:hover .stroke-text-pink {
+    @apply opacity-70;
+    -webkit-text-stroke: 1.5px var(--color-brand-black);
   }
 
   /* --- SYSTÈME DE RÉVÉLATION --- */
@@ -56,32 +58,32 @@
     }
   }
 
-  /* --- L'EFFET RETENU : GRAIN + GLOW AU SURVOL (NYC MAGAZINE STYLE) --- */
+  /* --- EFFET GRAIN (STAY SUBTLE) --- */
   .bg-grain {
     position: relative;
   }
-  /* L'effet Grain discret (Ancien Home) */
   .bg-grain::before {
     content: "";
     position: fixed;
     inset: 0;
-    opacity: 0.05; /* Plus discret pour la féminité */
+    opacity: 0.03; /* Encore plus léger pour le look rose/blanc clean */
     pointer-events: none;
     z-index: 99;
     background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    filter: contrast(160%) brightness(100%);
+    filter: contrast(150%) brightness(100%);
   }
 
-  /* L'effet "Glow" au survol pour les cartes de services (Ultra Attractive) */
-  .group:hover .relative.p-4 {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); /* L'éclat doré */
+  /* --- EFFET "GLOW" ROSE AU SURVOL --- */
+  .group:hover .relative.p-4, 
+  .group:hover .relative.p-2 {
+    box-shadow: 0 0 30px rgba(236, 72, 153, 0.25); /* Lueur Rose */
     transition: box-shadow 0.6s var(--ease-out-expo);
   }
 }
 
-/* --- ANIMATIONS --- */
+/* --- ANIMATIONS CUTE & GLAM --- */
 
-/* Flottement doux pour les coeurs et étoiles (Cute Factor) */
+/* Flottement pour les coeurs roses */
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
@@ -91,7 +93,7 @@
   50% { transform: translateY(-15px) rotate(3deg); }
 }
 
-/* Rotation lente pour les icônes Sparkles ou Star (Cute Factor) */
+/* Rotation lente pour les étoiles/sparkles */
 .animate-spin-slow {
   animation: spin-slow 12s linear infinite;
 }
@@ -101,7 +103,7 @@
   to { transform: rotate(360deg); }
 }
 
-/* Effet Shimmer (Brillance sur les boutons au survol) */
+/* Shimmer Rose pour les boutons */
 .animate-shimmer {
   position: relative;
   overflow: hidden;
@@ -114,7 +116,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(236, 72, 153, 0.2),
     transparent
   );
   animation: shimmer 3s infinite;
@@ -125,7 +127,7 @@
   100% { transform: translateX(100%); }
 }
 
-/* Apparition en fondu doux pour les images de la galerie */
+/* Apparition douce */
 .fade-in-view {
   animation: fade-in-scale 0.8s var(--ease-fluid) forwards;
 }
@@ -141,8 +143,8 @@
   }
 }
 
-/* Correction pour les inputs de date sur mobile */
+/* Date picker adapté au thème */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.2);
+  filter: hue-rotate(300deg) brightness(0.9); /* Aligne l'icône calendrier sur le rose */
   cursor: pointer;
 }
