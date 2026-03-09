@@ -1,99 +1,118 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut, LayoutDashboard, Menu, X, ArrowUpRight, Home } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Menu, X, ArrowUpRight, Home, Sparkles } from 'lucide-react';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation(); // Pour l'UX : savoir où on est
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  // UX : Gestion du scroll pour un header dynamique
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // UX Helper : Style pour le lien actif
+  const isActive = (path) => location.pathname === path;
+
+  const NavLink = ({ to, children, icon: Icon }) => (
+    <Link 
+      to={to} 
+      onClick={closeMenu}
+      className={`relative flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${
+        isActive(to) ? 'text-brand-pink' : 'text-white/70 hover:text-white'
+      }`}
+    >
+      {Icon && <Icon size={12} className={isActive(to) ? 'text-brand-pink' : 'text-brand-pink/50'} />}
+      {children}
+      {/* UX : Indicateur visuel de page active */}
+      {isActive(to) && (
+        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-brand-pink rounded-full shadow-[0_0_5px_#ff2d78]" />
+      )}
+    </Link>
+  );
+
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[100] px-4 md:px-6 py-4">
-        {/* Container principal - Effet Dark Glass */}
-        <div className="max-w-7xl mx-auto bg-brand-black/40 backdrop-blur-2xl border border-white/10 rounded-full px-6 md:px-8 py-3 md:py-4 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500">
+      <header 
+        className={`fixed top-0 left-0 right-0 z-[100] px-4 md:px-6 transition-all duration-500 ${
+          isScrolled ? 'py-2 md:py-3' : 'py-4 md:py-6'
+        }`}
+      >
+        <div className={`max-w-7xl mx-auto transition-all duration-500 rounded-full px-6 md:px-8 flex items-center justify-between border ${
+          isScrolled 
+          ? 'bg-brand-black/80 backdrop-blur-xl border-white/10 py-3 shadow-[0_20px_40px_rgba(0,0,0,0.3)]' 
+          : 'bg-brand-black/40 backdrop-blur-md border-white/5 py-4'
+        }`}>
           
-          {/* --- LOGO --- */}
-          <Link to="/" onClick={closeMenu} className="flex flex-col leading-none z-50 group">
-            <span className="text-lg md:text-xl font-black uppercase tracking-tighter italic text-white transition-colors group-hover:text-brand-pink">
-              Xpress<span className="text-brand-pink group-hover:text-white">Braids</span>
+          {/* LOGO */}
+          <Link to="/" onClick={closeMenu} className="group">
+            <span className="text-lg md:text-xl font-black uppercase tracking-tighter italic text-white transition-all">
+              Xpress<span className="text-brand-pink">Braids</span>
             </span>
-            <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] text-white/40">Studio NYC</span>
+            <div className="flex items-center gap-1 opacity-40">
+              <span className="text-[7px] font-black uppercase tracking-[0.4em] text-white">Maryland Studio</span>
+            </div>
           </Link>
 
-          {/* --- NAVIGATION DESKTOP --- */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Home</Link>
-            <Link to="/services" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Gallery</Link>
-            <Link to="/about" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">About</Link>
-            <Link to="/booking" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Booking</Link>
-            {user?.role === 'admin' && (
-              <Link to="/admin-control-center" className="text-[10px] font-black uppercase tracking-widest text-brand-pink flex items-center gap-2">
-                <LayoutDashboard size={14} /> Admin
-              </Link>
-            )}
+          {/* DESKTOP NAV */}
+          <nav className="hidden lg:flex items-center gap-10">
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/services" icon={Sparkles}>Style Menu</NavLink>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/booking">Booking</NavLink>
           </nav>
 
-          {/* --- ACTIONS --- */}
-          <div className="flex items-center gap-3 md:gap-4 z-50">
+          {/* ACTIONS */}
+          <div className="flex items-center gap-3">
             {user ? (
-              <div className="flex items-center gap-2 md:gap-4">
-                <Link to="/profile" onClick={closeMenu} className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:border-brand-pink transition-all group">
-                  <User size={16} className="text-white group-hover:text-brand-pink" />
+              <div className="flex items-center gap-3 bg-white/5 rounded-full p-1 pr-4 border border-white/10">
+                <Link to="/profile" className="w-8 h-8 rounded-full bg-brand-pink/20 flex items-center justify-center border border-brand-pink/30 hover:bg-brand-pink transition-all">
+                  <User size={14} className="text-white" />
                 </Link>
-                <button onClick={() => { logout(); closeMenu(); }} className="text-brand-pink/60 hover:text-brand-pink transition-colors p-2">
-                  <LogOut size={16} />
+                <button onClick={logout} className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-brand-pink transition-colors">
+                  Logout
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-3 md:gap-4">
-                <Link to="/login" onClick={closeMenu} className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Sign In</Link>
-                <Link to="/booking" onClick={closeMenu} className="bg-white text-brand-black px-5 md:px-7 py-2.5 md:py-3.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-brand-pink hover:text-white hover:scale-105 transition-all shadow-lg flex items-center gap-2">
-                  <span>Book</span> <span className="hidden md:inline">Now</span> <ArrowUpRight size={12} />
+              <div className="flex items-center gap-6">
+                <Link to="/login" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-brand-pink transition-all">Sign In</Link>
+                <Link to="/booking" className="bg-brand-pink text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:shadow-[0_0_20px_rgba(255,45,120,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                  <span>Book Now</span> <ArrowUpRight size={14} />
                 </Link>
               </div>
             )}
 
-            {/* BTN MENU MOBILE */}
-            <button 
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-white hover:bg-white/5 rounded-full transition-colors"
-            >
+            {/* MOBILE TOGGLE */}
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden p-2 text-white">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
-        {/* --- MENU MOBILE OVERLAY --- */}
-        <div className={`fixed inset-0 bg-brand-black z-[-1] transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] lg:hidden ${isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-brand-pink/10 blur-[100px] rounded-full" />
-          
-          <div className="flex flex-col items-center justify-center h-full gap-6 px-6 text-center relative z-10">
-            {/* Ajout du bouton Home pour Mobile */}
-            <Link onClick={closeMenu} to="/" className="flex items-center gap-3 text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">
-              <Home size={28} className="text-brand-pink" /> Home
-            </Link>
+        {/* MOBILE MENU */}
+        <div className={`fixed inset-0 bg-brand-black/98 backdrop-blur-2xl z-[-1] transition-all duration-500 ease-in-out lg:hidden ${
+          isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+        }`}>
+          <div className="flex flex-col items-center justify-center h-full gap-8">
+            <Link onClick={closeMenu} to="/" className={`text-4xl font-black italic uppercase ${isActive('/') ? 'text-brand-pink' : 'text-white'}`}>Home</Link>
+            <Link onClick={closeMenu} to="/services" className={`text-4xl font-black italic uppercase ${isActive('/services') ? 'text-brand-pink' : 'text-white'}`}>Style Menu</Link>
+            <Link onClick={closeMenu} to="/about" className={`text-4xl font-black italic uppercase ${isActive('/about') ? 'text-brand-pink' : 'text-white'}`}>About Us</Link>
+            <Link onClick={closeMenu} to="/booking" className={`text-4xl font-black italic uppercase ${isActive('/booking') ? 'text-brand-pink' : 'text-white'}`}>Booking</Link>
             
-            <Link onClick={closeMenu} to="/services" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Gallery</Link>
-            <Link onClick={closeMenu} to="/about" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">About Us</Link>
-            <Link onClick={closeMenu} to="/contact" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Contact</Link>
-            <Link onClick={closeMenu} to="/booking" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Booking</Link>
-            
-            <div className="w-full h-[1px] bg-white/10 max-w-[100px] my-4" />
-            
-            {!user && (
-                <Link onClick={closeMenu} to="/login" className="text-xl font-black uppercase tracking-widest text-brand-pink hover:text-white transition-colors">Sign In</Link>
-            )}
-            
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mt-4 italic">Studio NYC • Harlem</p>
+            <div className="mt-8 flex gap-4">
+               {!user && <Link onClick={closeMenu} to="/login" className="text-brand-pink font-black uppercase tracking-[0.2em]">Sign In</Link>}
+            </div>
           </div>
         </div>
       </header>
-      
-      {/* Spacer for mobile to prevent Hero overlap */}
-      <div className="h-24 lg:hidden" /> 
+      <div className="h-20 lg:hidden" />
     </>
   );
 };

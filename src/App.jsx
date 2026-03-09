@@ -9,15 +9,17 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Success from './pages/Success';
-import AboutUs from './pages/AboutUs'; // New Import
-import Contact from './pages/Contact'; // New Import
+import AboutUs from './pages/AboutUs';
+import Contact from './pages/Contact';
+import PriceList from './pages/PriceList'; // Import de la nouvelle page de tarifs
 import AdminDashboard from './pages/AdminDashboard'; 
 import ProtectedRoute from './components/ProtectedRoute'; 
 
 export default function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen flex flex-col bg-[#FDFCF8]">
+      {/* Changement de la couleur de fond pour matcher le thème Noir/Rose si besoin */}
+      <div className="min-h-screen flex flex-col bg-brand-black">
         
         <Header />
 
@@ -25,10 +27,15 @@ export default function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/about" element={<AboutUs />} /> {/* New Route */}
-            <Route path="/contact" element={<Contact />} /> {/* New Route */}
+            
+            {/* Menu des tarifs / Galerie de styles */}
+            <Route path="/services" element={<PriceList />} /> 
+            
+            {/* Page de réservation (reçoit le paramètre ?service=...) */}
             <Route path="/booking" element={<Booking />} />
+            
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/success" element={<Success />} />
@@ -53,8 +60,8 @@ export default function App() {
               } 
             />
             
-            {/* Automatic redirection for /studio */}
-            <Route path="/studio" element={<Services />} />
+            {/* Redirections automatiques */}
+            <Route path="/studio" element={<PriceList />} />
           </Routes>
         </main>
 
