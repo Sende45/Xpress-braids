@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, LogOut, LayoutDashboard, Menu, X, ArrowUpRight } from 'lucide-react';
+import { User, LogOut, LayoutDashboard, Menu, X, ArrowUpRight, Home } from 'lucide-react';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -16,18 +16,18 @@ const Header = () => {
         <div className="max-w-7xl mx-auto bg-brand-black/40 backdrop-blur-2xl border border-white/10 rounded-full px-6 md:px-8 py-3 md:py-4 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-500">
           
           {/* --- LOGO --- */}
-          <Link to="/" onClick={closeMenu} className="flex flex-col leading-none z-50">
-            <span className="text-lg md:text-xl font-black uppercase tracking-tighter italic text-white">
-              Xpress<span className="text-brand-pink">Braids</span>
+          <Link to="/" onClick={closeMenu} className="flex flex-col leading-none z-50 group">
+            <span className="text-lg md:text-xl font-black uppercase tracking-tighter italic text-white transition-colors group-hover:text-brand-pink">
+              Xpress<span className="text-brand-pink group-hover:text-white">Braids</span>
             </span>
             <span className="text-[7px] md:text-[8px] font-black uppercase tracking-[0.4em] text-white/40">Studio NYC</span>
           </Link>
 
           {/* --- NAVIGATION DESKTOP --- */}
           <nav className="hidden lg:flex items-center gap-8">
+            <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Home</Link>
             <Link to="/services" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Gallery</Link>
             <Link to="/about" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">About</Link>
-            <Link to="/contact" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Contact</Link>
             <Link to="/booking" className="text-[10px] font-black uppercase tracking-widest text-white/70 hover:text-brand-pink transition-colors">Booking</Link>
             {user?.role === 'admin' && (
               <Link to="/admin-control-center" className="text-[10px] font-black uppercase tracking-widest text-brand-pink flex items-center gap-2">
@@ -68,22 +68,26 @@ const Header = () => {
 
         {/* --- MENU MOBILE OVERLAY --- */}
         <div className={`fixed inset-0 bg-brand-black z-[-1] transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] lg:hidden ${isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
-          {/* Halo rose en fond de menu mobile */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-brand-pink/10 blur-[100px] rounded-full" />
           
-          <div className="flex flex-col items-center justify-center h-full gap-8 px-6 text-center relative z-10">
+          <div className="flex flex-col items-center justify-center h-full gap-6 px-6 text-center relative z-10">
+            {/* Ajout du bouton Home pour Mobile */}
+            <Link onClick={closeMenu} to="/" className="flex items-center gap-3 text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">
+              <Home size={28} className="text-brand-pink" /> Home
+            </Link>
+            
             <Link onClick={closeMenu} to="/services" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Gallery</Link>
             <Link onClick={closeMenu} to="/about" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">About Us</Link>
             <Link onClick={closeMenu} to="/contact" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Contact</Link>
             <Link onClick={closeMenu} to="/booking" className="text-4xl font-black uppercase italic tracking-tighter text-white hover:text-brand-pink transition-colors">Booking</Link>
             
-            <div className="w-full h-[1px] bg-white/10 max-w-[100px] my-2" />
+            <div className="w-full h-[1px] bg-white/10 max-w-[100px] my-4" />
             
             {!user && (
                 <Link onClick={closeMenu} to="/login" className="text-xl font-black uppercase tracking-widest text-brand-pink hover:text-white transition-colors">Sign In</Link>
             )}
             
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mt-4">Studio NYC • Harlem</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 mt-4 italic">Studio NYC • Harlem</p>
           </div>
         </div>
       </header>
