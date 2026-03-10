@@ -6,8 +6,8 @@ import {
   ArrowLeft, Zap 
 } from 'lucide-react';
 
-// Centralisation des données pour la cohérence
 const pricingData = {
+  // ... (tes données restent identiques ici)
   "Knotless Large": [
     { id: "kl-1", name: "Jumbo+large (Mid back)", price: 220, duration: 180 },
     { id: "kl-2", name: "Medium (Mid back)", price: 200, duration: 240 },
@@ -31,7 +31,6 @@ const pricingData = {
   ]
 };
 
-// Aplatir la liste pour la recherche
 const allServices = Object.values(pricingData).flat();
 
 const Booking = () => {
@@ -55,14 +54,21 @@ const Booking = () => {
   const DEPOSIT_AMOUNT = 30; 
   const availableSlots = ["09:00 AM", "11:00 AM", "02:00 PM", "04:30 PM"];
 
-  // Trouver le service sélectionné
   const selectedService = useMemo(() => 
     allServices.find(s => s.name === bookingData.service), 
     [bookingData.service]
   );
 
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
+  const nextStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Important pour iPhone
+    setStep(step + 1);
+  };
+  
+  const prevStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setStep(step - 1);
+  };
+
   const isFormComplete = bookingData.firstName && bookingData.lastName && bookingData.email && bookingData.phone;
 
   const handlePayment = async () => {
@@ -82,7 +88,7 @@ const Booking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-20 px-6 font-sans">
+    <div className="min-h-screen min-h-[100dvh] bg-white pt-32 pb-20 px-6 font-sans overflow-x-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Progress Header */}
@@ -105,12 +111,11 @@ const Booking = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           <div className="lg:col-span-8">
             
-            {/* STEP 1: SERVICE SELECTION */}
             {step === 1 && (
               <div className="grid gap-4">
                 {allServices.map((s) => (
                   <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s.name}); nextStep(); }}
-                    className={`group flex justify-between items-center p-6 rounded-[1.5rem] border transition-all ${bookingData.service === s.name ? 'bg-black text-white border-black scale-[1.01]' : 'bg-pink-50/20 border-pink-100 hover:border-pink-300'}`}>
+                    className={`group flex justify-between items-center p-6 rounded-[1.5rem] border transition-all active:scale-95 ${bookingData.service === s.name ? 'bg-black text-white border-black shadow-xl' : 'bg-pink-50/20 border-pink-100 hover:border-pink-300'}`}>
                     <div className="text-left">
                       <h3 className="text-lg font-black uppercase italic">{s.name}</h3>
                       <p className="text-[10px] opacity-60 uppercase font-bold tracking-widest">Full Price: ${s.price} • Deposit: ${DEPOSIT_AMOUNT}</p>
@@ -121,7 +126,6 @@ const Booking = () => {
               </div>
             )}
 
-            {/* STEP 2: DATE & TIME */}
             {step === 2 && (
               <div className="space-y-8">
                 <div className="bg-white p-8 rounded-[2.5rem] border border-pink-100 shadow-xl shadow-pink-500/5">
@@ -129,8 +133,14 @@ const Booking = () => {
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 flex items-center gap-2 mb-4">
                       <CalendarIcon size={14} /> Select Date
                     </label>
-                    <input type="date" className="w-full bg-transparent text-3xl font-black outline-none focus:text-pink-500"
-                      onChange={(e) => setBookingData({...bookingData, date: e.target.value})} value={bookingData.date} />
+                    {/* Correction iOS pour l'input date */}
+                    <input 
+                      type="date" 
+                      style={{ WebkitAppearance: 'none', minHeight: '3rem' }} // Force le style sur iPhone
+                      className="w-full bg-transparent text-3xl font-black outline-none focus:text-pink-500 border-none appearance-none"
+                      onChange={(e) => setBookingData({...bookingData, date: e.target.value})} 
+                      value={bookingData.date} 
+                    />
                   </div>
                   
                   {bookingData.date && (
@@ -141,7 +151,7 @@ const Booking = () => {
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {availableSlots.map((slot) => (
                           <button key={slot} onClick={() => setBookingData({...bookingData, time: slot})}
-                            className={`py-4 rounded-xl font-black text-[10px] tracking-widest transition-all ${bookingData.time === slot ? 'bg-pink-500 text-white' : 'bg-pink-50/50 text-stone-600 border border-pink-100 hover:border-pink-500'}`}>
+                            className={`py-4 rounded-xl font-black text-[10px] tracking-widest transition-all active:scale-95 ${bookingData.time === slot ? 'bg-pink-500 text-white' : 'bg-pink-50/50 text-stone-600 border border-pink-100'}`}>
                             {slot}
                           </button>
                         ))}
@@ -149,34 +159,34 @@ const Booking = () => {
                     </div>
                   )}
                 </div>
-                <button disabled={!bookingData.time} onClick={nextStep} className="w-full bg-black text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-pink-600 disabled:opacity-10 transition-all">
+                <button disabled={!bookingData.time} onClick={nextStep} className="w-full bg-black text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs active:bg-pink-600 disabled:opacity-20 transition-all">
                   Next Step
                 </button>
               </div>
             )}
 
-            {/* STEP 3: PERSONAL INFO */}
             {step === 3 && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input type="text" placeholder="First Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none focus:border-pink-500 focus:bg-white transition-all" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
-                  <input type="text" placeholder="Last Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none focus:border-pink-500 focus:bg-white transition-all" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
-                  <input type="email" placeholder="Email" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none focus:border-pink-500 focus:bg-white transition-all" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
-                  <input type="tel" placeholder="Phone" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none focus:border-pink-500 focus:bg-white transition-all" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans">
+                  {/* Utilisation de text-base (16px) minimum pour éviter le zoom automatique iOS */}
+                  <input type="text" placeholder="First Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
+                  <input type="text" placeholder="Last Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
+                  <input type="email" placeholder="Email" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
+                  <input type="tel" placeholder="Phone" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
                 </div>
                 <div className="bg-stone-900 text-white p-8 rounded-[2rem] flex justify-between items-center">
                   <p className="text-sm font-medium">Non-refundable Deposit</p>
                   <p className="text-3xl font-black italic text-pink-500">${DEPOSIT_AMOUNT}.00</p>
                 </div>
-                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-pink-500 text-white py-7 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-pink-600 transition-all disabled:opacity-50">
+                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-pink-500 text-white py-7 rounded-2xl font-black uppercase tracking-widest text-xs active:scale-95 transition-all disabled:opacity-50">
                   {loading ? "Redirecting..." : "Pay Deposit & Confirm"}
                 </button>
               </div>
             )}
           </div>
 
-          {/* SIDEBAR SUMMARY */}
-          <div className="lg:col-span-4 h-fit sticky top-40">
+          <div className="lg:col-span-4 h-fit sticky top-40 hidden md:block">
+            {/* Sommaire (caché sur petit mobile pour éviter de manger l'espace) */}
             <div className="bg-stone-50 border border-stone-100 p-8 rounded-[2rem] space-y-6">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400">Your Selection</h4>
               {selectedService ? (
