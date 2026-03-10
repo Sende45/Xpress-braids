@@ -76,7 +76,6 @@ const Header = () => {
           <div className="flex items-center gap-2 md:gap-4">
             {user ? (
               <div className="flex items-center gap-2 md:gap-4">
-                {/* Mobile Admin Icon (Discret mais présent header fermé) */}
                 {user.role === 'admin' && (
                   <Link to="/admin-control-center" className="lg:hidden w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center text-pink-500 animate-pulse">
                     <ShieldCheck size={16} />
@@ -91,7 +90,7 @@ const Header = () => {
               </div>
             ) : (
               <div className="flex items-center gap-3 md:gap-4">
-                <Link to="/login" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white">Sign In</Link>
+                <Link to="/login" className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-all">Sign In</Link>
                 <Link to="/booking" className="bg-brand-pink text-white px-5 md:px-7 py-2.5 md:py-3.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-2 border border-brand-pink">
                   <span>Book</span> <ArrowUpRight size={12} />
                 </Link>
@@ -108,23 +107,23 @@ const Header = () => {
           </div>
         </div>
 
-        {/* --- MOBILE MENU OVERLAY (Optimisé iPhone) --- */}
+        {/* --- MOBILE MENU OVERLAY --- */}
         <div className={`fixed inset-0 bg-brand-black z-[-1] transition-all duration-500 flex flex-col items-center justify-center px-8 lg:hidden ${
           isMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
         }`}>
           
-          {/* Admin Hero Access (Uniquement pour toi) */}
+          {/* Admin Priority Access */}
           {user?.role === 'admin' && (
             <Link 
               onClick={closeMenu} 
               to="/admin-control-center" 
-              className="w-full mb-10 p-6 rounded-[2rem] bg-pink-500/10 border border-pink-500/30 flex items-center justify-between group active:scale-95 transition-all"
+              className="w-full mb-8 p-6 rounded-[2rem] bg-pink-500/10 border border-pink-500/30 flex items-center justify-between group active:scale-95 transition-all"
             >
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-pink-500 rounded-2xl text-white shadow-lg shadow-pink-500/40">
+                <div className="p-3 bg-pink-500 rounded-2xl text-white">
                   <LayoutDashboard size={20} />
                 </div>
-                <div className="text-left">
+                <div className="text-left leading-none">
                   <p className="text-[10px] font-black text-pink-500 uppercase tracking-widest mb-1">Privileged Access</p>
                   <p className="text-xl font-black text-white uppercase italic">Control Center</p>
                 </div>
@@ -133,16 +132,39 @@ const Header = () => {
             </Link>
           )}
 
-          <nav className="flex flex-col items-center gap-8">
+          <nav className="flex flex-col items-center gap-6 text-center">
             <Link onClick={closeMenu} to="/" className={`text-4xl font-black italic uppercase ${isActive('/') ? 'text-brand-pink' : 'text-white'}`}>Home</Link>
             <Link onClick={closeMenu} to="/gallery" className={`text-4xl font-black italic uppercase ${isActive('/gallery') ? 'text-brand-pink' : 'text-white'}`}>Gallery</Link>
             <Link onClick={closeMenu} to="/services" className={`text-4xl font-black italic uppercase ${isActive('/services') ? 'text-brand-pink' : 'text-white'}`}>Style Menu</Link>
             <Link onClick={closeMenu} to="/about" className={`text-4xl font-black italic uppercase ${isActive('/about') ? 'text-brand-pink' : 'text-white'}`}>About Us</Link>
+            
+            {/* Ligne de séparation subtile */}
+            <div className="w-12 h-px bg-white/10 my-2" />
+
+            {/* --- SECTION AUTH MOBILE --- */}
+            {!user ? (
+              <Link 
+                onClick={closeMenu} 
+                to="/login" 
+                className="text-xl font-black uppercase tracking-widest text-brand-pink hover:text-white transition-colors"
+              >
+                Sign In
+              </Link>
+            ) : (
+              <Link 
+                onClick={closeMenu} 
+                to="/profile" 
+                className="text-xl font-black uppercase tracking-widest text-white hover:text-brand-pink transition-colors"
+              >
+                My Account
+              </Link>
+            )}
+
             <Link onClick={closeMenu} to="/booking" className="mt-4 bg-white text-black px-10 py-5 rounded-full font-black uppercase italic tracking-widest text-sm active:scale-95 transition-all">Book Now</Link>
           </nav>
 
-          <div className="absolute bottom-12 text-[9px] font-black uppercase tracking-[0.4em] text-white/20">
-            XpressBraids • Master System
+          <div className="absolute bottom-12 text-[9px] font-black uppercase tracking-[0.4em] text-white/20 italic">
+            XpressBraids • Master Studio
           </div>
         </div>
       </header>
