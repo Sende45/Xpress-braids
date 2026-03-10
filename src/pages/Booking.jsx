@@ -35,8 +35,7 @@ const allServices = Object.values(pricingData).flat();
 const Booking = () => {
   const [searchParams] = useSearchParams();
   const serviceFromUrl = searchParams.get('service');
-  const dateInputRef = useRef(null);
-
+  
   const [step, setStep] = useState(serviceFromUrl ? 2 : 1);
   const [loading, setLoading] = useState(false);
   const [bookingData, setBookingData] = useState({
@@ -71,18 +70,6 @@ const Booking = () => {
 
   const isFormComplete = bookingData.firstName && bookingData.lastName && bookingData.email && bookingData.phone;
 
-  // UX IPHONE : Forcer l'ouverture du calendrier iOS
-  const triggerDatePicker = () => {
-    if (dateInputRef.current) {
-      if ('showPicker' in HTMLInputElement.prototype) {
-        dateInputRef.current.showPicker();
-      } else {
-        dateInputRef.current.focus();
-        dateInputRef.current.click();
-      }
-    }
-  };
-
   const handlePayment = async () => {
     if (!selectedService) return alert("Please select a service.");
     setLoading(true);
@@ -103,7 +90,7 @@ const Booking = () => {
     <div className="min-h-screen min-h-[100dvh] bg-brand-black pt-32 pb-20 px-6 font-sans overflow-x-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         
-        {/* Header de progression */}
+        {/* Header */}
         <div className="mb-12 flex items-end justify-between border-b border-white/10 pb-8">
           <div className="space-y-2">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink">Step 0{step} / 03</span>
@@ -125,7 +112,7 @@ const Booking = () => {
             
             {/* ETAPE 1 */}
             {step === 1 && (
-              <div className="grid gap-4">
+              <div className="grid gap-4 animate-in fade-in duration-500">
                 {allServices.map((s) => (
                   <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s.name}); nextStep(); }}
                     className={`group flex justify-between items-center p-6 rounded-[1.5rem] border transition-all active:scale-95 ${bookingData.service === s.name ? 'bg-brand-pink text-white border-brand-pink shadow-[0_0_30px_rgba(255,45,120,0.3)]' : 'bg-white/5 border-white/10 text-white'}`}>
@@ -139,30 +126,30 @@ const Booking = () => {
               </div>
             )}
 
-            {/* ETAPE 2: DATE & TIME (iOS Fix) */}
+            {/* ETAPE 2: DATE & TIME (iPhone Fix) */}
             {step === 2 && (
-              <div className="space-y-8">
+              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl">
                   
+                  {/* Utilisation de <label for="..."> pour forcer Safari à ouvrir l'input date */}
                   <div className="mb-8 group">
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-4">
+                    <label htmlFor="date-picker" className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-4 cursor-pointer">
                       <CalendarIcon size={14} /> Select Date
                     </label>
                     
-                    <div 
-                      onClick={triggerDatePicker}
-                      className="relative border-b-2 border-white/10 group-hover:border-brand-pink transition-colors pb-4 cursor-pointer"
-                    >
-                      <div className="text-4xl md:text-5xl font-black text-white italic tracking-tighter pointer-events-none">
+                    <div className="relative border-b-2 border-white/10 group-hover:border-brand-pink transition-colors pb-4">
+                      {/* Affichage visuel (Label) */}
+                      <label htmlFor="date-picker" className="block text-4xl md:text-5xl font-black text-white italic tracking-tighter cursor-pointer">
                         {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "Pick a date"}
-                      </div>
+                      </label>
                       
+                      {/* Input Date : Identifié par ID, positionné par dessus mais invisible */}
                       <input 
-                        ref={dateInputRef}
+                        id="date-picker"
                         type="date"
                         required
-                        className="absolute inset-0 w-full h-full opacity-0 pointer-events-auto"
-                        style={{ WebkitAppearance: 'none', fontSize: '16px' }} 
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        style={{ WebkitAppearance: 'none', minHeight: '44px' }} 
                         onChange={(e) => setBookingData({...bookingData, date: e.target.value})} 
                         value={bookingData.date} 
                       />
@@ -170,7 +157,7 @@ const Booking = () => {
                   </div>
                   
                   {bookingData.date && (
-                    <div className="pt-8 border-t border-white/10">
+                    <div className="pt-8 border-t border-white/10 animate-in fade-in duration-500">
                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-6">
                         <Clock size={14} /> Available Times
                       </label>
@@ -185,25 +172,30 @@ const Booking = () => {
                     </div>
                   )}
                 </div>
-                <button disabled={!bookingData.time} onClick={nextStep} className="w-full bg-white text-brand-black py-6 rounded-2xl font-black uppercase tracking-widest text-xs active:opacity-80 disabled:opacity-20 transition-all shadow-xl">
-                  Next Step
+                
+                <button 
+                  disabled={!bookingData.time} 
+                  onClick={nextStep} 
+                  className="w-full bg-white text-brand-black py-6 rounded-2xl font-black uppercase tracking-widest text-xs active:bg-brand-pink active:text-white disabled:opacity-20 transition-all shadow-xl"
+                >
+                  Continue to Checkout
                 </button>
               </div>
             )}
 
             {/* ETAPE 3 */}
             {step === 3 && (
-              <div className="space-y-6">
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input type="text" placeholder="First Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
-                  <input type="text" placeholder="Last Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
-                  <input type="email" placeholder="Email" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
-                  <input type="tel" placeholder="Phone" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
+                  <input type="text" placeholder="First Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-[16px] focus:border-brand-pink" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
+                  <input type="text" placeholder="Last Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-[16px] focus:border-brand-pink" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
+                  <input type="email" placeholder="Email" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-[16px] focus:border-brand-pink" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
+                  <input type="tel" placeholder="Phone" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-[16px] focus:border-brand-pink" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
                 </div>
                 
                 <div className="bg-brand-pink/10 border border-brand-pink/20 p-8 rounded-[2rem] flex justify-between items-center">
                   <p className="text-4xl font-black italic text-brand-pink">${DEPOSIT_AMOUNT}.00</p>
-                  <p className="text-[10px] font-black uppercase text-brand-pink/60 text-right">Security <br/> Deposit</p>
+                  <p className="text-[10px] font-black uppercase text-brand-pink/60 text-right leading-tight">Security <br/> Deposit</p>
                 </div>
 
                 <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-white text-brand-black py-7 rounded-2xl font-black uppercase text-xs active:scale-95 transition-all disabled:opacity-50">
@@ -212,7 +204,7 @@ const Booking = () => {
               </div>
             )}
           </div>
-
+          
           {/* Sidebar */}
           <div className="lg:col-span-4 h-fit sticky top-40 hidden lg:block">
              <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] space-y-6">
