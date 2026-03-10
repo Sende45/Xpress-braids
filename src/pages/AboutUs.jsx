@@ -1,9 +1,11 @@
 import React from 'react';
-import { Sparkles, Heart, Star, ShieldCheck, Zap } from 'lucide-react';
+import { Sparkles, Zap } from 'lucide-react';
+// Importation de l'image depuis ton dossier assets
+import phiphiImg from '../assets/phiphi1.jpeg';
 
 const AboutUs = () => {
   return (
-    <div className="bg-brand-black min-h-screen pt-40 pb-20 px-6 relative overflow-hidden">
+    <div className="bg-brand-black min-h-screen pt-40 pb-20 px-6 relative overflow-hidden font-sans">
       {/* Pink Glow Accents */}
       <div className="absolute top-1/4 -right-20 w-96 h-96 bg-brand-pink/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 -left-20 w-80 h-80 bg-brand-pink/5 blur-[100px] rounded-full pointer-events-none" />
@@ -44,8 +46,9 @@ const AboutUs = () => {
         {/* Right: The Visionary Visual */}
         <div className="relative lg:pl-10">
           <div className="relative aspect-[3/4] rounded-[4rem] overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700 group border border-white/10 group-hover:border-brand-pink/50">
+            {/* Utilisation de l'image importée */}
             <img 
-              src="https://images.unsplash.com/photo-1595476108010-b4d1f80d77d2?q=80&w=800" 
+              src={phiphiImg} 
               alt="PHIPHI - Master Stylist" 
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
             />
@@ -53,7 +56,7 @@ const AboutUs = () => {
           </div>
           
           {/* Floating Experience Badge - Rose & Noir */}
-          <div className="absolute -bottom-10 -left-10 bg-brand-pink text-white p-10 rounded-full shadow-[0_0_50px_rgba(255,45,120,0.3)] flex flex-col items-center animate-float border-4 border-brand-black">
+          <div className="absolute -bottom-10 -left-10 bg-brand-pink text-white p-10 rounded-full shadow-[0_0_50px_rgba(255,45,120,0.3)] flex flex-col items-center animate-float border-4 border-brand-black z-20">
             <Zap size={24} className="mb-1" />
             <span className="text-white font-black text-2xl uppercase">Xpress</span>
             <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/80">Flawless</span>
