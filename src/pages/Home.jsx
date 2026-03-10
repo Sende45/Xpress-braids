@@ -115,7 +115,7 @@ const Home = () => {
       <section className="py-24 lg:py-40 bg-black text-white px-6 rounded-t-[4rem] lg:rounded-t-[8rem] -mt-24 relative z-30 shadow-[0_-30px_60px_rgba(0,0,0,0.5)]">
         <div className="max-w-7xl mx-auto space-y-24">
           <div className="text-center">
-            <h2 className="text-5xl lg:text-8xl font-black uppercase italic tracking-tighter"><span className="text-pink-500">Why</span> choose Us?</h2>
+            <h2 className="text-5xl lg:text-8xl font-black uppercase italic tracking-tighter"><span className="text-pink-500">Why</span> choosing Us?</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
             {[
