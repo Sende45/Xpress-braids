@@ -1,13 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Calendar as CalendarIcon, Clock, ChevronRight, 
-  ArrowLeft, Zap 
+  ArrowLeft, Zap, CheckCircle2 
 } from 'lucide-react';
 
 const pricingData = {
-  // ... (tes données restent identiques ici)
   "Knotless Large": [
     { id: "kl-1", name: "Jumbo+large (Mid back)", price: 220, duration: 180 },
     { id: "kl-2", name: "Medium (Mid back)", price: 200, duration: 240 },
@@ -36,6 +35,9 @@ const allServices = Object.values(pricingData).flat();
 const Booking = () => {
   const [searchParams] = useSearchParams();
   const serviceFromUrl = searchParams.get('service');
+  
+  // Ref pour le calendrier iOS
+  const dateInputRef = useRef(null);
 
   const [step, setStep] = useState(serviceFromUrl ? 2 : 1);
   const [loading, setLoading] = useState(false);
@@ -60,7 +62,7 @@ const Booking = () => {
   );
 
   const nextStep = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Important pour iPhone
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setStep(step + 1);
   };
   
@@ -70,6 +72,17 @@ const Booking = () => {
   };
 
   const isFormComplete = bookingData.firstName && bookingData.lastName && bookingData.email && bookingData.phone;
+
+  // Fonction pour forcer le calendrier sur iPhone
+  const handleDateClick = () => {
+    if (dateInputRef.current) {
+      try {
+        dateInputRef.current.showPicker();
+      } catch (err) {
+        dateInputRef.current.focus();
+      }
+    }
+  };
 
   const handlePayment = async () => {
     if (!selectedService) return alert("Please select a service.");
@@ -88,21 +101,21 @@ const Booking = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-white pt-32 pb-20 px-6 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-brand-black pt-32 pb-20 px-6 font-sans overflow-x-hidden">
       <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Progress Header */}
-        <div className="mb-12 flex items-end justify-between border-b border-black/5 pb-8">
+        <div className="mb-12 flex items-end justify-between border-b border-white/10 pb-8">
           <div className="space-y-2">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-500">Step 0{step} / 03</span>
-            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-black">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-pink">Step 0{step} / 03</span>
+            <h1 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
               {step === 1 && "Select Style"}
               {step === 2 && "Pick a Slot"}
               {step === 3 && "Confirm Details"}
             </h1>
           </div>
           {step > 1 && (
-            <button onClick={prevStep} className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-pink-500 transition-colors">
+            <button onClick={prevStep} className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-brand-pink transition-colors">
               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Back
             </button>
           )}
@@ -115,12 +128,12 @@ const Booking = () => {
               <div className="grid gap-4">
                 {allServices.map((s) => (
                   <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s.name}); nextStep(); }}
-                    className={`group flex justify-between items-center p-6 rounded-[1.5rem] border transition-all active:scale-95 ${bookingData.service === s.name ? 'bg-black text-white border-black shadow-xl' : 'bg-pink-50/20 border-pink-100 hover:border-pink-300'}`}>
+                    className={`group flex justify-between items-center p-6 rounded-[1.5rem] border transition-all active:scale-95 ${bookingData.service === s.name ? 'bg-brand-pink text-white border-brand-pink shadow-[0_0_30px_rgba(255,45,120,0.3)]' : 'bg-white/5 border-white/10 hover:border-brand-pink/50 text-white'}`}>
                     <div className="text-left">
                       <h3 className="text-lg font-black uppercase italic">{s.name}</h3>
                       <p className="text-[10px] opacity-60 uppercase font-bold tracking-widest">Full Price: ${s.price} • Deposit: ${DEPOSIT_AMOUNT}</p>
                     </div>
-                    <ChevronRight size={18} />
+                    <ChevronRight size={18} className={bookingData.service === s.name ? 'text-white' : 'text-brand-pink'} />
                   </button>
                 ))}
               </div>
@@ -128,30 +141,36 @@ const Booking = () => {
 
             {step === 2 && (
               <div className="space-y-8">
-                <div className="bg-white p-8 rounded-[2.5rem] border border-pink-100 shadow-xl shadow-pink-500/5">
-                  <div className="mb-8">
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 flex items-center gap-2 mb-4">
+                <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl">
+                  {/* DATE PICKER IPHONE OPTIMIZED */}
+                  <div className="mb-8 group cursor-pointer" onClick={handleDateClick}>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-4">
                       <CalendarIcon size={14} /> Select Date
                     </label>
-                    {/* Correction iOS pour l'input date */}
-                    <input 
-                      type="date" 
-                      style={{ WebkitAppearance: 'none', minHeight: '3rem' }} // Force le style sur iPhone
-                      className="w-full bg-transparent text-3xl font-black outline-none focus:text-pink-500 border-none appearance-none"
-                      onChange={(e) => setBookingData({...bookingData, date: e.target.value})} 
-                      value={bookingData.date} 
-                    />
+                    <div className="relative border-b-2 border-white/10 group-hover:border-brand-pink transition-colors pb-4">
+                      <div className="text-4xl md:text-5xl font-black text-white italic tracking-tighter">
+                        {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "Pick a date"}
+                      </div>
+                      <input 
+                        ref={dateInputRef}
+                        type="date" 
+                        required
+                        className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                        onChange={(e) => setBookingData({...bookingData, date: e.target.value})} 
+                        value={bookingData.date} 
+                      />
+                    </div>
                   </div>
                   
                   {bookingData.date && (
-                    <div className="pt-8 border-t border-pink-50">
-                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-500 flex items-center gap-2 mb-6">
+                    <div className="pt-8 border-t border-white/10">
+                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-6">
                         <Clock size={14} /> Available Times
                       </label>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {availableSlots.map((slot) => (
                           <button key={slot} onClick={() => setBookingData({...bookingData, time: slot})}
-                            className={`py-4 rounded-xl font-black text-[10px] tracking-widest transition-all active:scale-95 ${bookingData.time === slot ? 'bg-pink-500 text-white' : 'bg-pink-50/50 text-stone-600 border border-pink-100'}`}>
+                            className={`py-4 rounded-xl font-black text-[10px] tracking-widest transition-all active:scale-95 ${bookingData.time === slot ? 'bg-brand-pink text-white shadow-[0_0_15px_rgba(255,45,120,0.4)]' : 'bg-white/5 text-white/60 border border-white/10 hover:border-brand-pink/30'}`}>
                             {slot}
                           </button>
                         ))}
@@ -159,51 +178,73 @@ const Booking = () => {
                     </div>
                   )}
                 </div>
-                <button disabled={!bookingData.time} onClick={nextStep} className="w-full bg-black text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs active:bg-pink-600 disabled:opacity-20 transition-all">
-                  Next Step
+                <button disabled={!bookingData.time} onClick={nextStep} className="w-full bg-white text-brand-black py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-pink hover:text-white disabled:opacity-20 transition-all shadow-xl">
+                  Continue to Checkout
                 </button>
               </div>
             )}
 
             {step === 3 && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans">
-                  {/* Utilisation de text-base (16px) minimum pour éviter le zoom automatique iOS */}
-                  <input type="text" placeholder="First Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
-                  <input type="text" placeholder="Last Name" className="w-full bg-pink-50/30 border border-pink-100 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
-                  <input type="email" placeholder="Email" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
-                  <input type="tel" placeholder="Phone" className="w-full bg-pink-50/30 border border-pink-100 md:col-span-2 p-5 rounded-xl font-bold outline-none text-base focus:border-pink-500 focus:bg-white" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input type="text" placeholder="First Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink transition-all" value={bookingData.firstName} onChange={(e) => setBookingData({...bookingData, firstName: e.target.value})} />
+                  <input type="text" placeholder="Last Name" className="w-full bg-white/5 border border-white/10 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink transition-all" value={bookingData.lastName} onChange={(e) => setBookingData({...bookingData, lastName: e.target.value})} />
+                  <input type="email" placeholder="Email" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink transition-all" value={bookingData.email} onChange={(e) => setBookingData({...bookingData, email: e.target.value})} />
+                  <input type="tel" placeholder="Phone" className="w-full bg-white/5 border border-white/10 md:col-span-2 p-5 rounded-xl font-bold text-white outline-none text-base focus:border-brand-pink transition-all" value={bookingData.phone} onChange={(e) => setBookingData({...bookingData, phone: e.target.value})} />
                 </div>
-                <div className="bg-stone-900 text-white p-8 rounded-[2rem] flex justify-between items-center">
-                  <p className="text-sm font-medium">Non-refundable Deposit</p>
-                  <p className="text-3xl font-black italic text-pink-500">${DEPOSIT_AMOUNT}.00</p>
+                
+                <div className="bg-brand-pink/10 border border-brand-pink/20 text-white p-8 rounded-[2rem] flex justify-between items-center">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-brand-pink">Required Deposit</p>
+                    <p className="text-sm font-medium text-white/60 italic">Non-refundable secure payment</p>
+                  </div>
+                  <p className="text-4xl font-black italic text-brand-pink">${DEPOSIT_AMOUNT}.00</p>
                 </div>
-                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-pink-500 text-white py-7 rounded-2xl font-black uppercase tracking-widest text-xs active:scale-95 transition-all disabled:opacity-50">
-                  {loading ? "Redirecting..." : "Pay Deposit & Confirm"}
+
+                <button disabled={!isFormComplete || loading} onClick={handlePayment} className="w-full bg-white text-brand-black py-7 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-pink hover:text-white active:scale-95 transition-all disabled:opacity-50 shadow-2xl">
+                  {loading ? "Processing..." : "Pay Deposit & Confirm"}
                 </button>
               </div>
             )}
           </div>
 
-          <div className="lg:col-span-4 h-fit sticky top-40 hidden md:block">
-            {/* Sommaire (caché sur petit mobile pour éviter de manger l'espace) */}
-            <div className="bg-stone-50 border border-stone-100 p-8 rounded-[2rem] space-y-6">
-              <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400">Your Selection</h4>
+          {/* Sidebar Summary */}
+          <div className="lg:col-span-4 h-fit sticky top-40 hidden lg:block">
+            <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] space-y-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-pink/5 blur-3xl rounded-full" />
+              
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink relative z-10">Booking Summary</h4>
+              
               {selectedService ? (
-                <div className="space-y-4">
+                <div className="space-y-6 relative z-10">
                   <div>
-                    <p className="text-xl font-black uppercase italic leading-none">{selectedService.name}</p>
-                    <div className="flex justify-between mt-2">
-                      <span className="text-[10px] font-bold text-pink-500 uppercase">Total: ${selectedService.price}</span>
-                      <span className="text-[10px] font-bold text-stone-400 uppercase">~{selectedService.duration / 60}h</span>
+                    <p className="text-2xl font-black uppercase italic leading-none text-white">{selectedService.name}</p>
+                    <div className="flex justify-between mt-3">
+                      <span className="text-[10px] font-bold text-brand-pink uppercase">Total: ${selectedService.price}</span>
+                      <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{selectedService.duration / 60}H Session</span>
                     </div>
                   </div>
-                  <div className="pt-4 border-t border-stone-200 space-y-2 text-[10px] font-black uppercase tracking-tighter text-stone-600">
-                    <div className="flex items-center gap-3"><CalendarIcon size={12} className="text-pink-500" /> {bookingData.date || "Date..."}</div>
-                    <div className="flex items-center gap-3"><Clock size={12} className="text-pink-500" /> {bookingData.time || "Time..."}</div>
+
+                  <div className="pt-6 border-t border-white/10 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-lg bg-brand-pink/10 flex items-center justify-center text-brand-pink">
+                        <CalendarIcon size={14} />
+                      </div>
+                      <span className="text-[10px] font-black text-white/60 uppercase">{bookingData.date || "Date Select..."}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-8 h-8 rounded-lg bg-brand-pink/10 flex items-center justify-center text-brand-pink">
+                        <Clock size={14} />
+                      </div>
+                      <span className="text-[10px] font-black text-white/60 uppercase">{bookingData.time || "Time Select..."}</span>
+                    </div>
                   </div>
                 </div>
-              ) : <p className="text-xs italic text-stone-400">Select a style to continue.</p>}
+              ) : (
+                <div className="py-10 text-center border-2 border-dashed border-white/5 rounded-2xl">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/20 italic">Select your art to continue</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
