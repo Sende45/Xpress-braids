@@ -1,6 +1,8 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import Calendar from 'react-calendar'; // Importation du calendrier
+import 'react-calendar/dist/Calendar.css'; // Style de base
 import { 
   Calendar as CalendarIcon, Clock, ChevronRight, 
   ArrowLeft, Zap, CheckCircle2 
@@ -38,6 +40,7 @@ const Booking = () => {
   
   const [step, setStep] = useState(serviceFromUrl ? 2 : 1);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // Détection mobile
   const [bookingData, setBookingData] = useState({
     service: serviceFromUrl || '',
     date: '',
@@ -47,6 +50,11 @@ const Booking = () => {
     email: '',
     phone: ''
   });
+
+  // Détecter si on est sur mobile au chargement
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+  }, []);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const CLEAN_BASE = API_URL.replace(/\/api\/auth\/?$/, "").replace(/\/$/, "");
@@ -88,6 +96,17 @@ const Booking = () => {
 
   return (
     <div className="min-h-screen min-h-[100dvh] bg-brand-black pt-32 pb-20 px-6 font-sans overflow-x-hidden">
+      {/* Styles Custom pour le calendrier Desktop */}
+      <style>{`
+        .react-calendar { width: 100% !important; background: transparent !important; border: none !important; font-family: inherit !important; color: white !important; }
+        .react-calendar__tile { color: white !important; padding: 1.5em 0.5em !important; font-weight: bold !important; border-radius: 12px !important; }
+        .react-calendar__tile--active { background: #ff2d78 !important; color: white !important; box-shadow: 0 0 20px rgba(255, 45, 120, 0.4); }
+        .react-calendar__tile:hover { background: rgba(255, 45, 120, 0.2) !important; }
+        .react-calendar__navigation button { color: white !important; font-weight: 900 !important; text-transform: uppercase !important; font-size: 1.2rem !important; }
+        .react-calendar__month-view__weekdays { color: #ff2d78 !important; font-weight: 900 !important; text-transform: uppercase !important; font-size: 0.7rem !important; }
+        .react-calendar__tile--now { background: rgba(255,255,255,0.1) !important; }
+      `}</style>
+
       <div className="max-w-5xl mx-auto relative z-10">
         
         {/* Header */}
@@ -126,38 +145,47 @@ const Booking = () => {
               </div>
             )}
 
-            {/* ETAPE 2: DATE & TIME (iPhone Fix) */}
+            {/* ETAPE 2: DATE & TIME */}
             {step === 2 && (
               <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl">
+                <div className="bg-white/5 p-4 md:p-8 rounded-[2.5rem] border border-white/10 shadow-2xl">
                   
-                  {/* Utilisation de <label for="..."> pour forcer Safari à ouvrir l'input date */}
-                  <div className="mb-8 group">
-                    <label htmlFor="date-picker" className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-4 cursor-pointer">
-                      <CalendarIcon size={14} /> Select Date
-                    </label>
-                    
-                    <div className="relative border-b-2 border-white/10 group-hover:border-brand-pink transition-colors pb-4">
-                      {/* Affichage visuel (Label) */}
-                      <label htmlFor="date-picker" className="block text-4xl md:text-5xl font-black text-white italic tracking-tighter cursor-pointer">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-4">
+                    <CalendarIcon size={14} /> Select Date
+                  </label>
+
+                  {isMobile ? (
+                    /* VERSION MOBILE : L'input invisible optimisé pour le calendrier natif */
+                    <div className="relative border-b-2 border-white/10 pb-4">
+                      <label htmlFor="date-picker" className="block text-4xl font-black text-white italic tracking-tighter cursor-pointer">
                         {bookingData.date ? new Date(bookingData.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "Pick a date"}
                       </label>
-                      
-                      {/* Input Date : Identifié par ID, positionné par dessus mais invisible */}
                       <input 
                         id="date-picker"
                         type="date"
                         required
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        style={{ WebkitAppearance: 'none', minHeight: '44px' }} 
                         onChange={(e) => setBookingData({...bookingData, date: e.target.value})} 
                         value={bookingData.date} 
                       />
                     </div>
-                  </div>
+                  ) : (
+                    /* VERSION DESKTOP : Calendrier visuel complet */
+                    <div className="calendar-container">
+                      <Calendar 
+                        onChange={(val) => {
+                          const dateStr = val.toISOString().split('T')[0];
+                          setBookingData({...bookingData, date: dateStr});
+                        }}
+                        value={bookingData.date ? new Date(bookingData.date) : new Date()}
+                        minDate={new Date()}
+                        className="mx-auto"
+                      />
+                    </div>
+                  )}
                   
                   {bookingData.date && (
-                    <div className="pt-8 border-t border-white/10 animate-in fade-in duration-500">
+                    <div className="pt-8 mt-8 border-t border-white/10 animate-in fade-in duration-500">
                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-pink flex items-center gap-2 mb-6">
                         <Clock size={14} /> Available Times
                       </label>
@@ -213,6 +241,10 @@ const Booking = () => {
                   <div className="space-y-4 text-white">
                     <p className="text-xl font-black uppercase italic leading-none">{selectedService.name}</p>
                     <p className="text-[10px] font-bold text-brand-pink uppercase tracking-widest">${selectedService.price} Total</p>
+                    <div className="pt-4 border-t border-white/10">
+                      <p className="text-[10px] opacity-40 uppercase tracking-widest mb-1">Date & Time</p>
+                      <p className="text-xs font-bold uppercase">{bookingData.date || '---'} @ {bookingData.time || '---'}</p>
+                    </div>
                   </div>
                 )}
              </div>
